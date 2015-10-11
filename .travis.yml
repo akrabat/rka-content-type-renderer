@@ -15,5 +15,5 @@ install:
   - composer info -i
 
 script:
-  - phpcs
-  - phpunit
+  - vendor/bin/phpcs
+  - vendor/bin/phpunit

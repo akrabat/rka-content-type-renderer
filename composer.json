@@ -19,7 +19,9 @@
         "openlss/lib-array2xml": "^0.0.9"
     },
     "require-dev": {
-        "zendframework/zend-diactoros": "^1.1"
+        "zendframework/zend-diactoros": "^1.1",
+        "phpunit/phpunit": "^4.8",
+        "squizlabs/php_codesniffer": "^2.3"
     },
     "autoload": {
         "psr-4": {
