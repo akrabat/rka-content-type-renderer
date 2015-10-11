@@ -1,0 +1,29 @@
+{
+    "name": "akrabat/rka-content-type-renderer",
+    "description": "Render an array to a JSON/XML/HTML PSR-7 Response based on a PSR-7 Request's Accept header.",
+    "keywords": [
+        "psr7", "json", "xml"
+    ],
+    "homepage": "http://github.com/akrabat/rka-content-type-renderer",
+    "type": "library",
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Rob Allen",
+            "email": "rob@akrabat.com",
+            "homepage": "http://akrabat.com"
+        }
+    ],
+    "require": {
+        "psr/http-message": "^1.0",
+        "openlss/lib-array2xml": "^0.0.9"
+    },
+    "require-dev": {
+        "zendframework/zend-diactoros": "^1.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "RKA\\ContentTypeRenderer\\": "src"
+        }
+    }
+}
