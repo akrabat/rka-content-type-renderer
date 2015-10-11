@@ -128,7 +128,19 @@ class RendererTest extends \PHPUnit_Framework_TestCase
     </style>
 </head>
 <body><ul>
-<li><strong>items:</strong> </li>
+<li><strong>items:</strong> <ul>
+<li><strong>0:</strong> <ul>
+<li><strong>name:</strong> Alex</li>
+<li><strong>is_admin:</strong> true</li>
+</ul>
+</li>
+<li><strong>1:</strong> <ul>
+<li><strong>name:</strong> Robin</li>
+<li><strong>is_admin:</strong> false</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </body>
 </html>
