@@ -68,7 +68,6 @@ class Renderer
         return $html;
     }
 
-
     /**
      * Recursively render an array to an HTML list
      *
@@ -85,7 +84,7 @@ class Renderer
             $html .= "<li><strong>" . $field . ":</strong> ";
             if (is_array($value)) {
                 // recurse
-                $this->arrayToHtml($value);
+                $html .= $this->arrayToHtml($value);
             } else {
                 // value, with hyperlinked hyperlinks
                 if (is_bool($value)) {
