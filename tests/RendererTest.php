@@ -5,6 +5,7 @@ use RKA\ContentTypeRenderer\Renderer;
 use Zend\Diactoros\Request;
 use Zend\Diactoros\Uri;
 use Zend\Diactoros\Response;
+use Zend\Diactoros\Stream;
 
 class RendererTest extends \PHPUnit_Framework_TestCase
 {
@@ -34,6 +35,7 @@ class RendererTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame('application/json', $response->getHeaderLine('Content-Type'));
         $this->assertSame(json_encode($data), (string)$response->getBody());
+        $this->assertInstanceOf('Zend\Diactoros\Stream', $response->getBody());
     }
 
     public function testXml()
@@ -132,5 +134,67 @@ class RendererTest extends \PHPUnit_Framework_TestCase
 </html>
 ';
         $this->assertSame($expected, (string)$response->getBody());
+    }
+
+    public function testUseOurOwnStreamIfCurrentOneIsNotWritable()
+    {
+        $data = [
+            'items' => [
+                [
+                    'name' => 'Alex',
+                    'is_admin' => true,
+                ],
+                [
+                    'name' => 'Robin',
+                    'is_admin' => false,
+                ],
+            ],
+        ];
+
+        $request = (new Request())
+            ->withUri(new Uri('http://example.com'))
+            ->withAddedHeader('Accept', 'application/json');
+
+        $response = new Response();
+        $response = $response->withBody(new Stream('php://temp', 'r'));
+
+        $renderer = new Renderer();
+        $response  = $renderer->render($request, $response, $data);
+
+        $this->assertSame('application/json', $response->getHeaderLine('Content-Type'));
+        $this->assertSame(json_encode($data), (string)$response->getBody());
+        $this->assertInstanceOf('RKA\ContentTypeRenderer\SimplePsrStream', $response->getBody());
+    }
+
+    public function testUseOurOwnStreamIfCurrentOneIsNotRewindable()
+    {
+        $data = [
+            'items' => [
+                [
+                    'name' => 'Alex',
+                    'is_admin' => true,
+                ],
+                [
+                    'name' => 'Robin',
+                    'is_admin' => false,
+                ],
+            ],
+        ];
+
+        $request = (new Request())
+            ->withUri(new Uri('http://example.com'))
+            ->withAddedHeader('Accept', 'application/json');
+
+        stream_wrapper_register("norewind", NonRewindableStream::class);
+
+        $response = new Response();
+        $response = $response->withBody(new Stream('norewind://temp', 'a'));
+
+        $renderer = new Renderer();
+        $response  = $renderer->render($request, $response, $data);
+
+        $this->assertSame('application/json', $response->getHeaderLine('Content-Type'));
+        $this->assertSame(json_encode($data), (string)$response->getBody());
+        $this->assertInstanceOf('RKA\ContentTypeRenderer\SimplePsrStream', $response->getBody());
     }
 }

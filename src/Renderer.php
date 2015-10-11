@@ -4,6 +4,7 @@ namespace RKA\ContentTypeRenderer;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Body;
+use RuntimeException;
 use LSS\Array2XML;
 
 class Renderer
@@ -32,7 +33,18 @@ class Renderer
                 break;
         }
 
-        $body = new SimplePsrStream(fopen('php://temp', 'r+'));
+        $body = $response->getBody();
+        if (!$body->isWritable()) {
+            // the response's body is not writable (or doesn't exist)
+            // so create our own
+            $body = new SimplePsrStream(fopen('php://temp', 'r+'));
+        }
+        try {
+            $body->rewind();
+        } catch (\RuntimeException $e) {
+            // could not rewind the stream, therefore use our own.
+            $body = new SimplePsrStream(fopen('php://temp', 'r+'));
+        }
         $body->write($output);
 
         return $response
