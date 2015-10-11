@@ -207,8 +207,8 @@ class SimplePsrStream implements StreamInterface
     {
         if ($this->stream) {
             $meta = $this->getMetadata();
-            $writeableModes = ['r+', 'w', 'w+', 'a', 'a+', 'x', 'x+', 'c', 'c+'];
-            foreach ($writeableModes as $mode) {
+            $writableModes = ['r+', 'w', 'w+', 'a', 'a+', 'x', 'x+', 'c', 'c+'];
+            foreach ($writableModes as $mode) {
                 if (strpos($meta['mode'], $mode) === 0) {
                     return true;
                 }

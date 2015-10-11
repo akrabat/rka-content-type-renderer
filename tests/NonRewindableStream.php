@@ -2,7 +2,7 @@
 namespace RKA\ContentTypeRenderer\Tests;
 
 /**
- * Stream wrapper that doesn't rewind a writeable stream
+ * Stream wrapper that doesn't rewind a writable stream
  *
  * Based in large part on the example at
  * http://php.net/manual/en/stream.streamwrapper.example-1.php
