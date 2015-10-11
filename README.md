@@ -2,6 +2,8 @@
 
 Render an array to a JSON/XML/HTML PSR-7 Response based on a PSR-7 Request's Accept header.
 
+[![Build status][Master image]][Master]
+
 ## Installation
 
 `composer require akrabat/rka-content-type-renderer`
@@ -29,3 +31,7 @@ $renderer = new RKA\ContentTypeRenderer\Renderer();
 $response  = $renderer->render($request, $response, $data);
 return $response->withStatus(200);
 ```
+
+
+[Master]: https://travis-ci.org/akrabat/rka-content-type-renderer
+[Master image]: https://secure.travis-ci.org/akrabat/rka-content-type-renderer.svg?branch=master
