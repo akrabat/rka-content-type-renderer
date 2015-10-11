@@ -1,5 +1,7 @@
 # Render output based on content-type
 
+[![Build status][Master image]][Master]
+
 Render an array to a JSON/XML/HTML PSR-7 Response based on a PSR-7 Request's Accept header.
 
 ## Installation
