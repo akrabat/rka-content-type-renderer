@@ -15,8 +15,7 @@
         }
     ],
     "require": {
-        "psr/http-message": "^1.0",
-        "openlss/lib-array2xml": "^0.0.9"
+        "psr/http-message": "^1.0"
     },
     "suggest": {
         "nocarrier/hal": "For creating HAL documents that can be rendered using HalRenderer"

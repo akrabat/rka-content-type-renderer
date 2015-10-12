@@ -5,7 +5,6 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Http\Body;
 use RuntimeException;
-use LSS\Array2XML;
 
 class Renderer
 {
