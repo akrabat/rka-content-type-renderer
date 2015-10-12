@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "dbe48773663a13a943e48b2068d3aa32",
+    "hash": "bdddb77f3bf997609444d84275d3795f",
     "packages": [
         {
             "name": "openlss/lib-array2xml",
