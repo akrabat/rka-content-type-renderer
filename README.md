@@ -32,13 +32,39 @@ $response  = $renderer->render($request, $response, $data);
 return $response->withStatus(200);
 ```
 
+## HalRenderer
 
-[Master]: https://travis-ci.org/akrabat/rka-content-type-renderer
-[Master image]: https://secure.travis-ci.org/akrabat/rka-content-type-renderer.svg?branch=master
+This component also supports [nocarrier/hal][hal] objects with the `HalRenderer`:
 
+```php
+$hal = new Nocarrier\Hal(
+    '/foo',
+    [
+        'items' => [
+            [
+                'name' => 'Alex',
+                'is_admin' => true,
+            ],
+            [
+                'name' => 'Robin',
+                'is_admin' => false,
+            ],
+        ],
+    ]
+);
+$renderer = new RKA\ContentTypeRenderer\HalRenderer();
+$response  = $renderer->render($request, $response, $hal);
+return $response->withStatus(200);
+```
 
 ## Testing
 
 * Code coverage: ``$ phpcs``
 * Unit tests: ``$ phpunit``
 * Code coverage: ``$ phpunit --coverage-html ./build``
+
+
+
+[Master]: https://travis-ci.org/akrabat/rka-content-type-renderer
+[Master image]: https://secure.travis-ci.org/akrabat/rka-content-type-renderer.svg?branch=master
+[hal]: https://github.com/blongden/hal
