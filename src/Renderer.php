@@ -176,7 +176,7 @@ class Renderer
      */
     public function getHtmlPrefix()
     {
-        if (!$this->htmlPrefix) {
+        if ($this->htmlPrefix === null) {
             $this->htmlPrefix = <<<HTML
 <!DOCTYPE html>
 <html>
@@ -225,7 +225,7 @@ HTML;
      */
     public function getHtmlPostfix()
     {
-        if (!$this->htmlPostfix) {
+        if ($this->htmlPostfix === null) {
             $this->htmlPostfix = <<<HTML
 </body>
 </html>

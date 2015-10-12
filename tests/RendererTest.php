@@ -153,6 +153,48 @@ class RendererTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Can change the surrounding HTML
+     */
+    public function testCustomHtml()
+    {
+        $data = [
+            'items' => [
+                [
+                    'name' => 'Alex',
+                    'is_admin' => true,
+                ],
+            ],
+        ];
+
+        $request = (new Request())
+            ->withUri(new Uri('http://example.com'))
+            ->withAddedHeader('Accept', 'text/html');
+        $response = new Response();
+        $renderer = new Renderer();
+
+        $renderer->setHtmlPrefix('');
+        $renderer->setHtmlPostfix('');
+
+        $response  = $renderer->render($request, $response, $data);
+
+        $expectedBody = '<ul>
+<li><strong>items:</strong> <ul>
+<li><strong>0:</strong> <ul>
+<li><strong>name:</strong> Alex</li>
+<li><strong>is_admin:</strong> true</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+';
+
+        $this->assertSame('text/html', $response->getHeaderLine('Content-Type'));
+        $this->assertSame($expectedBody, (string)$response->getBody());
+
+    }
+
+    /**
      * If the stream in the Response is not writable, then we need to replace
      * it with our own SimplePsrStream
      */
