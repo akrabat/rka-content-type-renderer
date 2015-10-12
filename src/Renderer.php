@@ -45,7 +45,7 @@ class Renderer
                 break;
             
             default:
-                throw new RuntimeException("Unkown content type $contentType");
+                throw new RuntimeException("Unknown content type $contentType");
         }
 
         return $output;
