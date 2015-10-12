@@ -145,7 +145,6 @@ class Renderer
         return $this->getDefaultContentType();
     }
 
-
     /**
      * Getter for defaultContentType
      *
@@ -167,8 +166,6 @@ class Renderer
         $this->defaultContentType = $defaultContentType;
         return $this;
     }
-    
-
 
     /**
      * Getter for htmlPrefix
