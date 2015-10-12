@@ -14,7 +14,7 @@ class RendererTest extends \PHPUnit_Framework_TestCase
      *
      * @dataProvider rendererProvider
      */
-    public function testRenderer($contentType, $data, $expectedContentType, $expectedBody)
+    public function testRenderer($renderer, $contentType, $data, $expectedContentType, $expectedBody)
     {
         $request = (new Request())
             ->withUri(new Uri('http://example.com'))
@@ -22,7 +22,6 @@ class RendererTest extends \PHPUnit_Framework_TestCase
 
         $response = new Response();
 
-        $renderer = new Renderer();
         $response  = $renderer->render($request, $response, $data);
 
         $this->assertSame($expectedContentType, $response->getHeaderLine('Content-Type'));
@@ -34,10 +33,11 @@ class RendererTest extends \PHPUnit_Framework_TestCase
      * Data provider for testRenderer()
      *
      * Array format:
-     *     0 => Accept header content type in Request
-     *     0 => Data array to be rendered
-     *     1 => Expected content type in Response
-     *     2 => Expected body string in Response
+     *     0 => Renderer
+     *     1 => Accept header content type in Request
+     *     2 => Data array to be rendered
+     *     3 => Expected content type in Response
+     *     4 => Expected body string in Response
      *
      * @return array
      */
@@ -123,12 +123,17 @@ class RendererTest extends \PHPUnit_Framework_TestCase
 </html>
 ';
 
+        $renderer = new Renderer();
+        $htmlRenderer = new Renderer();
+        $htmlRenderer->setDefaultContentType('text/html');
+            
         return [
-            ['application/json', $data, 'application/json', $expectedJson],
-            ['application/xml', $data, 'application/xml', $expectedXML],
-            ['text/xml', $data, 'text/xml', $expectedXML],
-            ['text/html', $data, 'text/html', $expectedHTML],
-            ['text/csv', $data, 'application/json', $expectedJson], // default to JSON for unknown content type
+            [$renderer, 'application/json', $data, 'application/json', $expectedJson],
+            [$renderer, 'application/xml', $data, 'application/xml', $expectedXML],
+            [$renderer, 'text/xml', $data, 'text/xml', $expectedXML],
+            [$renderer, 'text/html', $data, 'text/html', $expectedHTML],
+            [$renderer, 'text/csv', $data, 'application/json', $expectedJson], // default to JSON for unknown content type
+            [$htmlRenderer, 'text/csv', $data, 'text/html', $expectedHTML], // default to HTML in this case for unknown content type
         ];
     }
 
