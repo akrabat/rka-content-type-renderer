@@ -9,6 +9,7 @@ use LSS\Array2XML;
 
 class Renderer
 {
+    protected $defaultContentType = 'application/json';
     protected $htmlPrefix;
     protected $htmlPostfix;
 
@@ -140,8 +141,33 @@ class Renderer
             }
         }
 
-        return 'text/html';
+        return $this->getDefaultContentType();
     }
+
+
+    /**
+     * Getter for defaultContentType
+     *
+     * @return string
+     */
+    public function getDefaultContentType()
+    {
+        return $this->defaultContentType;
+    }
+    
+    /**
+     * Setter for defaultContentType
+     *
+     * @param string $defaultContentType Value to set
+     * @return self
+     */
+    public function setDefaultContentType($defaultContentType)
+    {
+        $this->defaultContentType = $defaultContentType;
+        return $this;
+    }
+    
+
 
     /**
      * Getter for htmlPrefix
