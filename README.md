@@ -1,6 +1,6 @@
 # Render output based on content-type
 
-Render an array to a JSON/XML/HTML PSR-7 Response based on a PSR-7 Request's Accept header.
+Render an array(or HAL object) to a JSON/XML/HTML PSR-7 Response based on a PSR-7 Request's Accept header.
 
 [![Build status][Master image]][Master]
 
