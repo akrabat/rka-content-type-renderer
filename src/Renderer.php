@@ -19,6 +19,15 @@ class Renderer
         }
         $contentType = $this->determineContentType($request->getHeaderLine('Accept'));
 
+        $output = $this->renderOutput($contentType, $data);
+        $response = $this->writeBody($response, $output);
+        $response = $response->withHeader('Content-type', $contentType);
+        
+        return $response;
+    }
+
+    protected function renderOutput($contentType, $data)
+    {
         switch ($contentType) {
             case 'text/html':
                 $output = $this->renderHtml($data);
@@ -31,12 +40,18 @@ class Renderer
                 break;
 
             case 'application/json':
-            default:
-                $contentType = 'application/json';
                 $output = json_encode($data);
                 break;
+            
+            default:
+                throw new RuntimeException("Unkown content type $contentType");
         }
 
+        return $output;
+    }
+
+    protected function writeBody($response, $output)
+    {
         $body = $response->getBody();
         if (!$body->isWritable()) {
             // the response's body is not writable (or doesn't exist)
@@ -51,9 +66,7 @@ class Renderer
         }
         $body->write($output);
 
-        return $response
-                ->withHeader('Content-type', $contentType)
-                ->withBody($body);
+        return $response->withBody($body);
     }
 
     /**
@@ -63,7 +76,7 @@ class Renderer
      *
      * @return string
      */
-    private function renderHtml($data)
+    protected function renderHtml($data)
     {
         $html = $this->getHtmlPrefix();
         $html .= $this->arrayToHtml($data);
@@ -79,7 +92,7 @@ class Renderer
      *
      * @return null
      */
-    private function arrayToHtml(array $content, $html = '')
+    protected function arrayToHtml(array $content, $html = '')
     {
         $html = "<ul>\n";
 
@@ -115,7 +128,7 @@ class Renderer
      * @param  string $acceptHeader Accept header from request
      * @return string
      */
-    private function determineContentType($acceptHeader)
+    protected function determineContentType($acceptHeader)
     {
         $list = explode(',', $acceptHeader);
         $known = ['application/json', 'application/xml', 'text/html'];
