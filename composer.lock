@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "2e7b67dc506a6610f7f0fefddda59ae0",
+    "hash": "dbe48773663a13a943e48b2068d3aa32",
     "packages": [
         {
             "name": "openlss/lib-array2xml",
@@ -159,6 +159,54 @@
                 "instantiate"
             ],
             "time": "2015-06-14 21:17:01"
+        },
+        {
+            "name": "nocarrier/hal",
+            "version": "0.9.11",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/blongden/hal.git",
+                "reference": "f9fc0acaae3a6247bc465e92a24f9c9fc8207cd0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/blongden/hal/zipball/f9fc0acaae3a6247bc465e92a24f9c9fc8207cd0",
+                "reference": "f9fc0acaae3a6247bc465e92a24f9c9fc8207cd0",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.4.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Nocarrier": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ben Longden",
+                    "email": "ben@nocarrier.co.uk",
+                    "homepage": "http://nocarrier.co.uk"
+                }
+            ],
+            "description": "application/hal builder / formatter for PHP 5.3+",
+            "homepage": "https://github.com/blongden/hal",
+            "keywords": [
+                "hal",
+                "hypermedia",
+                "json",
+                "rest",
+                "xml"
+            ],
+            "time": "2015-07-01 09:57:11"
         },
         {
             "name": "phpdocumentor/reflection-docblock",
@@ -511,16 +559,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "4.8.11",
+            "version": "4.8.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "bdd199472410fd7e32751f9c814c7e06f2c21bd5"
+                "reference": "00194eb95989190a73198390ceca081ad3441a7f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/bdd199472410fd7e32751f9c814c7e06f2c21bd5",
-                "reference": "bdd199472410fd7e32751f9c814c7e06f2c21bd5",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/00194eb95989190a73198390ceca081ad3441a7f",
+                "reference": "00194eb95989190a73198390ceca081ad3441a7f",
                 "shasum": ""
             },
             "require": {
@@ -579,7 +627,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2015-10-07 10:39:46"
+            "time": "2015-10-12 03:36:47"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -871,16 +919,16 @@
         },
         {
             "name": "sebastian/global-state",
-            "version": "1.1.0",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/global-state.git",
-                "reference": "23af31f402993cfd94e99cbc4b782e9a78eb0e97"
+                "reference": "bc37d50fea7d017d3d340f230811c9f1d7280af4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/global-state/zipball/23af31f402993cfd94e99cbc4b782e9a78eb0e97",
-                "reference": "23af31f402993cfd94e99cbc4b782e9a78eb0e97",
+                "url": "https://api.github.com/repos/sebastianbergmann/global-state/zipball/bc37d50fea7d017d3d340f230811c9f1d7280af4",
+                "reference": "bc37d50fea7d017d3d340f230811c9f1d7280af4",
                 "shasum": ""
             },
             "require": {
@@ -918,7 +966,7 @@
             "keywords": [
                 "global state"
             ],
-            "time": "2015-06-21 15:11:22"
+            "time": "2015-10-12 03:26:01"
         },
         {
             "name": "sebastian/recursion-context",
