@@ -65,15 +65,15 @@ class RendererTest extends \PHPUnit_Framework_TestCase
 
         $expectedJson = json_encode($data);
 
-        $expectedXML = '<?xml version="1.0" encoding="UTF-8"?>
+        $expectedXML = '<?xml version="1.0"?>
 <root>
   <items>
     <name>Alex</name>
-    <is_admin>true</is_admin>
+    <is_admin>1</is_admin>
   </items>
   <items>
     <name>Robin</name>
-    <is_admin>false</is_admin>
+    <is_admin>0</is_admin>
     <link>http://example.com</link>
   </items>
 </root>
@@ -121,6 +121,14 @@ class RendererTest extends \PHPUnit_Framework_TestCase
 </html>
 ';
 
+        $expectedXML2 = '<?xml version="1.0"?>
+<root>
+  <_0>1</_0>
+  <foo>bar</foo>
+  <_1>3</_1>
+</root>
+';
+
         return [
             ['application/json', $data, 'application/json', $expectedJson, null],
             ['application/xml', $data, 'application/xml', $expectedXML, null],
@@ -132,6 +140,9 @@ class RendererTest extends \PHPUnit_Framework_TestCase
             
             // default to HTML in this case for unknown content type
             ['text/csv', $data, 'text/html', $expectedHTML, 'text/html'],
+
+            // Numeric array indexes can cause trouble for XML
+            ['text/xml', [[1], 'foo'=>'bar', 3], 'text/xml', $expectedXML2, null],
         ];
     }
 

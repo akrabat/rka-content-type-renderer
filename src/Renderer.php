@@ -37,8 +37,7 @@ class Renderer
 
             case 'application/xml':
             case 'text/xml':
-                $xml = Array2XML::createXML('root', $data);
-                $output = $xml->saveXML();
+                $output = $this->renderXml($data);
                 break;
 
             case 'application/json':
@@ -243,5 +242,80 @@ HTML;
     {
         $this->htmlPostfix = $htmlPostfix;
         return $this;
+    }
+
+    /**
+     * Render Array as XML
+     *
+     * @return string
+     */
+    protected function renderXml($data)
+    {
+        $xml = $this->arrayToXml($data);
+
+        $dom = new \DOMDocument('1.0');
+        $dom->preserveWhiteSpace = false;
+        $dom->formatOutput = true;
+        $dom->loadXML($xml->asXML());
+        
+        return $dom->saveXML();
+    }
+
+    /**
+     * Simple Array to XML conversion
+     * Based on http://www.codeproject.com/Questions/553031/JSONplusTOplusXMLplusconvertionpluswithplusphp
+     *
+     * @param  array $data                  Data to convert
+     * @param  SimpleXMLElement $xmlElement XMLElement
+     * @return SimpleXMLElement
+     */
+    protected function arrayToXml($data, $xmlElement = null)
+    {
+        if ($xmlElement === null) {
+            $xmlElement = new \SimpleXMLElement("<?xml version=\"1.0\"?><root></root>");
+        }
+
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                if (!is_numeric($key)) {
+                    $subnode = $xmlElement->addChild("$key");
+
+                    if (count($value) >1 && is_array($value)) {
+                        $jump = false;
+                        $count = 1;
+                        foreach ($value as $k => $v) {
+                            if (is_array($v)) {
+                                if ($count++ > 1) {
+                                    $subnode = $xmlElement->addChild("$key");
+                                }
+
+                                $this->arrayToXml($v, $subnode);
+                                $jump = true;
+                            }
+                        }
+                        if ($jump) {
+                            goto LE;
+                        }
+                        $this->arrayToXml($value, $subnode);
+                    } else {
+                        $this->arrayToXml($value, $subnode);
+                    }
+                } else {
+                    $this->arrayToXml($value, $xmlElement);
+                }
+            } else {
+                if (is_bool($value)) {
+                    $value = (int)$value;
+                }
+                if (is_numeric($key)) {
+                    $key = "_$key";
+                }
+                $xmlElement->addChild("$key", "$value");
+            }
+
+            LE: ;
+        }
+
+        return $xmlElement;
     }
 }
