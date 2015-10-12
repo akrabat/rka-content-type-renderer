@@ -35,3 +35,10 @@ return $response->withStatus(200);
 
 [Master]: https://travis-ci.org/akrabat/rka-content-type-renderer
 [Master image]: https://secure.travis-ci.org/akrabat/rka-content-type-renderer.svg?branch=master
+
+
+## Testing
+
+* Code coverage: ``$ phpcs``
+* Unit tests: ``$ phpunit``
+* Code coverage: ``$ phpunit --coverage-html ./build``
