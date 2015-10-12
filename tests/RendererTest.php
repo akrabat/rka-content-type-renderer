@@ -6,6 +6,7 @@ use Zend\Diactoros\Request;
 use Zend\Diactoros\Uri;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\Stream;
+use RuntimeException;
 
 class RendererTest extends \PHPUnit_Framework_TestCase
 {
@@ -14,8 +15,13 @@ class RendererTest extends \PHPUnit_Framework_TestCase
      *
      * @dataProvider rendererProvider
      */
-    public function testRenderer($renderer, $contentType, $data, $expectedContentType, $expectedBody)
+    public function testRenderer($contentType, $data, $expectedContentType, $expectedBody, $defaultContentType)
     {
+        $renderer = new Renderer();
+        if ($defaultContentType) {
+            $renderer->setDefaultContentType($defaultContentType);
+        }
+
         $request = (new Request())
             ->withUri(new Uri('http://example.com'))
             ->withAddedHeader('Accept', $contentType);
@@ -26,18 +32,18 @@ class RendererTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($expectedContentType, $response->getHeaderLine('Content-Type'));
         $this->assertSame($expectedBody, (string)$response->getBody());
-        $this->assertInstanceOf('Zend\Diactoros\Stream', $response->getBody());
+        $this->assertInstanceOf(Stream::class, $response->getBody());
     }
 
     /**
      * Data provider for testRenderer()
      *
      * Array format:
-     *     0 => Renderer
-     *     1 => Accept header content type in Request
-     *     2 => Data array to be rendered
-     *     3 => Expected content type in Response
-     *     4 => Expected body string in Response
+     *     0 => Accept header content type in Request
+     *     1 => Data array to be rendered
+     *     2 => Expected content type in Response
+     *     3 => Expected body string in Response
+     *     4 => Default content type for Renderer
      *
      * @return array
      */
@@ -52,22 +58,12 @@ class RendererTest extends \PHPUnit_Framework_TestCase
                 [
                     'name' => 'Robin',
                     'is_admin' => false,
+                    'link' => 'http://example.com',
                 ],
             ],
         ];
 
-        $expectedJson = json_encode([
-            'items' => [
-                [
-                    'name' => 'Alex',
-                    'is_admin' => true,
-                ],
-                [
-                    'name' => 'Robin',
-                    'is_admin' => false,
-                ],
-            ],
-        ]);
+        $expectedJson = json_encode($data);
 
         $expectedXML = '<?xml version="1.0" encoding="UTF-8"?>
 <root>
@@ -78,6 +74,7 @@ class RendererTest extends \PHPUnit_Framework_TestCase
   <items>
     <name>Robin</name>
     <is_admin>false</is_admin>
+    <link>http://example.com</link>
   </items>
 </root>
 ';
@@ -114,6 +111,7 @@ class RendererTest extends \PHPUnit_Framework_TestCase
 <li><strong>1:</strong> <ul>
 <li><strong>name:</strong> Robin</li>
 <li><strong>is_admin:</strong> false</li>
+<li><strong>link:</strong> <a href="http://example.com">http://example.com</a></li>
 </ul>
 </li>
 </ul>
@@ -123,22 +121,35 @@ class RendererTest extends \PHPUnit_Framework_TestCase
 </html>
 ';
 
-        $renderer = new Renderer();
-        $htmlRenderer = new Renderer();
-        $htmlRenderer->setDefaultContentType('text/html');
-            
         return [
-            [$renderer, 'application/json', $data, 'application/json', $expectedJson],
-            [$renderer, 'application/xml', $data, 'application/xml', $expectedXML],
-            [$renderer, 'text/xml', $data, 'text/xml', $expectedXML],
-            [$renderer, 'text/html', $data, 'text/html', $expectedHTML],
+            ['application/json', $data, 'application/json', $expectedJson, null],
+            ['application/xml', $data, 'application/xml', $expectedXML, null],
+            ['text/xml', $data, 'text/xml', $expectedXML, null],
+            ['text/html', $data, 'text/html', $expectedHTML, null],
 
             // default to JSON for unknown content type
-            [$renderer, 'text/csv', $data, 'application/json', $expectedJson],
+            ['text/csv', $data, 'application/json', $expectedJson, null],
             
             // default to HTML in this case for unknown content type
-            [$htmlRenderer, 'text/csv', $data, 'text/html', $expectedHTML],
+            ['text/csv', $data, 'text/html', $expectedHTML, 'text/html'],
         ];
+    }
+
+    /**
+     * The data has to be an array
+     */
+    public function testCaseWhenDataIsNotAnArray()
+    {
+        $data = 'Alex';
+
+        $request = (new Request())
+            ->withUri(new Uri('http://example.com'))
+            ->withAddedHeader('Accept', 'application/json');
+        $response = new Response();
+        $renderer = new Renderer();
+
+        $this->setExpectedException(RuntimeException::class, 'Data is not an array');
+        $response  = $renderer->render($request, $response, $data);
     }
 
     /**

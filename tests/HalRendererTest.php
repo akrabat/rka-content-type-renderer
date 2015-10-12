@@ -6,7 +6,7 @@ use Nocarrier\Hal;
 use Zend\Diactoros\Request;
 use Zend\Diactoros\Uri;
 use Zend\Diactoros\Response;
-use Zend\Diactoros\Stream;
+use RuntimeException;
 
 class HalRendererTest extends \PHPUnit_Framework_TestCase
 {
@@ -15,8 +15,10 @@ class HalRendererTest extends \PHPUnit_Framework_TestCase
      *
      * @dataProvider rendererProvider
      */
-    public function testRenderer($renderer, $contentType, $data, $expectedContentType, $expectedBody)
+    public function testRenderer($contentType, $data, $expectedContentType, $expectedBody)
     {
+        $renderer = new Renderer();
+
         $request = (new Request())
             ->withUri(new Uri('http://example.com'))
             ->withAddedHeader('Accept', $contentType);
@@ -27,18 +29,16 @@ class HalRendererTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($expectedContentType, $response->getHeaderLine('Content-Type'));
         $this->assertSame($expectedBody, (string)$response->getBody());
-        $this->assertInstanceOf('Zend\Diactoros\Stream', $response->getBody());
     }
 
     /**
      * Data provider for testRenderer()
      *
      * Array format:
-     *     0 => Renderer
-     *     1 => Accept header content type in Request
-     *     2 => Data array to be rendered
-     *     3 => Expected content type in Response
-     *     4 => Expected body string in Response
+     *     0 => Accept header content type in Request
+     *     1 => Data array to be rendered
+     *     2 => Expected content type in Response
+     *     3 => Expected body string in Response
      *
      * @return array
      */
@@ -131,21 +131,29 @@ class HalRendererTest extends \PHPUnit_Framework_TestCase
 </html>
 ';
 
-        $renderer = new Renderer();
-        $htmlRenderer = new Renderer();
-        $htmlRenderer->setDefaultContentType('text/html');
-            
         return [
-            [$renderer, 'application/json', $data, 'application/json', $expectedJson],
-            [$renderer, 'application/xml', $data, 'application/xml', $expectedXML],
-            [$renderer, 'text/xml', $data, 'text/xml', $expectedXML],
-            [$renderer, 'text/html', $data, 'text/html', $expectedHTML],
-
-            // default to JSON for unknown content type
-            [$renderer, 'text/csv', $data, 'application/json', $expectedJson],
-
-            // default to HTML in this case for unknown content type
-            [$htmlRenderer, 'text/csv', $data, 'text/html', $expectedHTML],
+            ['application/json', $data, 'application/json', $expectedJson],
+            ['application/xml', $data, 'application/xml', $expectedXML],
+            ['text/xml', $data, 'text/xml', $expectedXML],
+            ['text/html', $data, 'text/html', $expectedHTML],
         ];
+    }
+
+
+    /**
+     * The data has to be a Hal object
+     */
+    public function testCaseWhenDataIsNotAHalObject()
+    {
+        $data = 'Alex';
+
+        $request = (new Request())
+            ->withUri(new Uri('http://example.com'))
+            ->withAddedHeader('Accept', 'application/json');
+        $response = new Response();
+        $renderer = new Renderer();
+
+        $this->setExpectedException(RuntimeException::class, 'Data is not a Hal object');
+        $response  = $renderer->render($request, $response, $data);
     }
 }
