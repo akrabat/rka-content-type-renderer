@@ -12,8 +12,11 @@ class Renderer
     protected $htmlPrefix;
     protected $htmlPostfix;
 
-    public function render(RequestInterface $request, ResponseInterface $response, array $data)
+    public function render(RequestInterface $request, ResponseInterface $response, $data)
     {
+        if (!is_array($data)) {
+            throw new RuntimeException('Data is not an array');
+        }
         $contentType = $this->determineContentType($request->getHeaderLine('Accept'));
 
         switch ($contentType) {
