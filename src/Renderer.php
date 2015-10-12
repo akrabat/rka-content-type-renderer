@@ -10,6 +10,7 @@ use LSS\Array2XML;
 class Renderer
 {
     protected $defaultContentType = 'application/json';
+    protected $knownContentTypes = ['application/json', 'application/xml', 'text/xml', 'text/html'];
     protected $htmlPrefix;
     protected $htmlPostfix;
 
@@ -133,10 +134,10 @@ class Renderer
     protected function determineContentType($acceptHeader)
     {
         $list = explode(',', $acceptHeader);
-        $known = ['application/json', 'application/xml', 'text/xml', 'text/html'];
+        
         
         foreach ($list as $type) {
-            if (in_array($type, $known)) {
+            if (in_array($type, $this->knownContentTypes)) {
                 return $type;
             }
         }

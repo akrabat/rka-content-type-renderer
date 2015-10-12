@@ -132,9 +132,11 @@ class HalRendererTest extends \PHPUnit_Framework_TestCase
 ';
 
         return [
-            ['application/json', $data, 'application/json', $expectedJson],
-            ['application/xml', $data, 'application/xml', $expectedXML],
-            ['text/xml', $data, 'text/xml', $expectedXML],
+            ['application/hal+json', $data, 'application/hal+json', $expectedJson],
+            ['application/json', $data, 'application/hal+json', $expectedJson],
+            ['application/hal+xml', $data, 'application/hal+xml', $expectedXML],
+            ['application/xml', $data, 'application/hal+xml', $expectedXML],
+            ['text/xml', $data, 'application/hal+xml', $expectedXML],
             ['text/html', $data, 'text/html', $expectedHTML],
         ];
     }
