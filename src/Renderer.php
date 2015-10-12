@@ -41,7 +41,7 @@ class Renderer
                 break;
 
             case 'application/json':
-                $output = json_encode($data);
+                $output = json_encode($data, JSON_PRETTY_PRINT);
                 break;
             
             default:
