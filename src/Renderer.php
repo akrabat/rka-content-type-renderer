@@ -14,9 +14,6 @@ class Renderer
 
     public function render(RequestInterface $request, ResponseInterface $response, $data)
     {
-        if (!is_array($data)) {
-            throw new RuntimeException('Data is not an array');
-        }
         $contentType = $this->determineContentType($request->getHeaderLine('Accept'));
 
         $output = $this->renderOutput($contentType, $data);
@@ -28,6 +25,10 @@ class Renderer
 
     protected function renderOutput($contentType, $data)
     {
+        if (!is_array($data)) {
+            throw new RuntimeException('Data is not an array');
+        }
+        
         switch ($contentType) {
             case 'text/html':
                 $output = $this->renderHtml($data);
