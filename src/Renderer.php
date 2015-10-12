@@ -28,7 +28,7 @@ class Renderer
         if (!is_array($data)) {
             throw new RuntimeException('Data is not an array');
         }
-        
+
         switch ($contentType) {
             case 'text/html':
                 $output = $this->renderHtml($data);
@@ -132,7 +132,7 @@ class Renderer
     protected function determineContentType($acceptHeader)
     {
         $list = explode(',', $acceptHeader);
-        $known = ['application/json', 'application/xml', 'text/html'];
+        $known = ['application/json', 'application/xml', 'text/xml', 'text/html'];
         
         foreach ($list as $type) {
             if (in_array($type, $known)) {
