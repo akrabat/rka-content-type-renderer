@@ -22,6 +22,7 @@ class Renderer
                 break;
 
             case 'application/xml':
+            case 'text/xml':
                 $xml = Array2XML::createXML('root', $data);
                 $output = $xml->saveXML();
                 break;
