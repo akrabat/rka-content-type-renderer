@@ -132,8 +132,12 @@ class RendererTest extends \PHPUnit_Framework_TestCase
             [$renderer, 'application/xml', $data, 'application/xml', $expectedXML],
             [$renderer, 'text/xml', $data, 'text/xml', $expectedXML],
             [$renderer, 'text/html', $data, 'text/html', $expectedHTML],
-            [$renderer, 'text/csv', $data, 'application/json', $expectedJson], // default to JSON for unknown content type
-            [$htmlRenderer, 'text/csv', $data, 'text/html', $expectedHTML], // default to HTML in this case for unknown content type
+
+            // default to JSON for unknown content type
+            [$renderer, 'text/csv', $data, 'application/json', $expectedJson],
+            
+            // default to HTML in this case for unknown content type
+            [$htmlRenderer, 'text/csv', $data, 'text/html', $expectedHTML],
         ];
     }
 

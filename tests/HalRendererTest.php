@@ -78,9 +78,10 @@ class HalRendererTest extends \PHPUnit_Framework_TestCase
             ]
         ]);
 
-        $expectedXML = '<?xml version="1.0"?>
-<resource href="/foo"><items><name>Alex</name><is_admin>1</is_admin></items><items><name>Robin</name><is_admin>0</is_admin></items></resource>
-';
+        $expectedXML = '<?xml version="1.0"?>' . PHP_EOL
+                    . '<resource href="/foo"><items><name>Alex</name><is_admin>1</is_admin></items>'
+                    . '<items><name>Robin</name><is_admin>0</is_admin></items></resource>'
+                    . PHP_EOL;
 
         $expectedHTML = '<!DOCTYPE html>
 <html>
@@ -139,8 +140,12 @@ class HalRendererTest extends \PHPUnit_Framework_TestCase
             [$renderer, 'application/xml', $data, 'application/xml', $expectedXML],
             [$renderer, 'text/xml', $data, 'text/xml', $expectedXML],
             [$renderer, 'text/html', $data, 'text/html', $expectedHTML],
-            [$renderer, 'text/csv', $data, 'application/json', $expectedJson], // default to JSON for unknown content type
-            [$htmlRenderer, 'text/csv', $data, 'text/html', $expectedHTML], // default to HTML in this case for unknown content type
+
+            // default to JSON for unknown content type
+            [$renderer, 'text/csv', $data, 'application/json', $expectedJson],
+
+            // default to HTML in this case for unknown content type
+            [$htmlRenderer, 'text/csv', $data, 'text/html', $expectedHTML],
         ];
     }
 }
