@@ -9,36 +9,39 @@ use Zend\Diactoros\Stream;
 
 class RendererTest extends \PHPUnit_Framework_TestCase
 {
-    public function testJson()
+    /**
+     * Test that a given array is rendered to the correct content type
+     *
+     * @dataProvider rendererProvider
+     */
+    public function testRenderer($contentType, $data, $expectedContentType, $expectedBody)
     {
-        $data = [
-            'items' => [
-                [
-                    'name' => 'Alex',
-                    'is_admin' => true,
-                ],
-                [
-                    'name' => 'Robin',
-                    'is_admin' => false,
-                ],
-            ],
-        ];
-
         $request = (new Request())
             ->withUri(new Uri('http://example.com'))
-            ->withAddedHeader('Accept', 'application/json');
+            ->withAddedHeader('Accept', $contentType);
 
         $response = new Response();
 
         $renderer = new Renderer();
         $response  = $renderer->render($request, $response, $data);
 
-        $this->assertSame('application/json', $response->getHeaderLine('Content-Type'));
-        $this->assertSame(json_encode($data), (string)$response->getBody());
+        $this->assertSame($expectedContentType, $response->getHeaderLine('Content-Type'));
+        $this->assertSame($expectedBody, (string)$response->getBody());
         $this->assertInstanceOf('Zend\Diactoros\Stream', $response->getBody());
     }
 
-    public function testXml()
+    /**
+     * Data provider for testRenderer()
+     *
+     * Array format:
+     *     0 => Accept header content type in Request
+     *     0 => Data array to be rendered
+     *     1 => Expected content type in Response
+     *     2 => Expected body string in Response
+     *
+     * @return array
+     */
+    public function rendererProvider()
     {
         $data = [
             'items' => [
@@ -53,16 +56,18 @@ class RendererTest extends \PHPUnit_Framework_TestCase
             ],
         ];
 
-        $request = (new Request())
-            ->withUri(new Uri('http://example.com'))
-            ->withAddedHeader('Accept', 'application/xml');
-
-        $response = new Response();
-
-        $renderer = new Renderer();
-        $response  = $renderer->render($request, $response, $data);
-
-        $this->assertSame('application/xml', $response->getHeaderLine('Content-Type'));
+        $expectedJson = json_encode([
+            'items' => [
+                [
+                    'name' => 'Alex',
+                    'is_admin' => true,
+                ],
+                [
+                    'name' => 'Robin',
+                    'is_admin' => false,
+                ],
+            ],
+        ]);
 
         $expectedXML = '<?xml version="1.0" encoding="UTF-8"?>
 <root>
@@ -76,36 +81,8 @@ class RendererTest extends \PHPUnit_Framework_TestCase
   </items>
 </root>
 ';
-        $this->assertSame($expectedXML, (string)$response->getBody());
-    }
 
-    public function testHtml()
-    {
-        $data = [
-            'items' => [
-                [
-                    'name' => 'Alex',
-                    'is_admin' => true,
-                ],
-                [
-                    'name' => 'Robin',
-                    'is_admin' => false,
-                ],
-            ],
-        ];
-
-        $request = (new Request())
-            ->withUri(new Uri('http://example.com'))
-            ->withAddedHeader('Accept', 'text/html');
-
-        $response = new Response();
-
-        $renderer = new Renderer();
-        $response  = $renderer->render($request, $response, $data);
-
-        $this->assertSame('text/html', $response->getHeaderLine('Content-Type'));
-
-        $expected = '<!DOCTYPE html>
+        $expectedHTML = '<!DOCTYPE html>
 <html>
 <head>
     <title></title>
@@ -145,9 +122,20 @@ class RendererTest extends \PHPUnit_Framework_TestCase
 </body>
 </html>
 ';
-        $this->assertSame($expected, (string)$response->getBody());
+
+        return [
+            ['application/json', $data, 'application/json', $expectedJson],
+            ['application/xml', $data, 'application/xml', $expectedXML],
+            ['text/xml', $data, 'text/xml', $expectedXML],
+            ['text/html', $data, 'text/html', $expectedHTML],
+            ['text/csv', $data, 'application/json', $expectedJson], // default to JSON for unknown content type
+        ];
     }
 
+    /**
+     * If the stream in the Response is not writable, then we need to replace
+     * it with our own SimplePsrStream
+     */
     public function testUseOurOwnStreamIfCurrentOneIsNotWritable()
     {
         $data = [
@@ -178,6 +166,10 @@ class RendererTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('RKA\ContentTypeRenderer\SimplePsrStream', $response->getBody());
     }
 
+    /**
+     * If the stream in the Response cannot be rewound, then we need to replace
+     * it with our own SimplePsrStream
+     */
     public function testUseOurOwnStreamIfCurrentOneIsNotRewindable()
     {
         $data = [
