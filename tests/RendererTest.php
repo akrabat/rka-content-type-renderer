@@ -63,7 +63,7 @@ class RendererTest extends \PHPUnit_Framework_TestCase
             ],
         ];
 
-        $expectedJson = json_encode($data, JSON_PRETTY_PRINT);
+        $expectedJson = json_encode($data, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
 
         $expectedXML = '<?xml version="1.0"?>
 <root>
@@ -235,7 +235,7 @@ class RendererTest extends \PHPUnit_Framework_TestCase
         $response  = $renderer->render($request, $response, $data);
 
         $this->assertSame('application/json', $response->getHeaderLine('Content-Type'));
-        $this->assertSame(json_encode($data, JSON_PRETTY_PRINT), (string)$response->getBody());
+        $this->assertSame(json_encode($data, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES), (string)$response->getBody());
         $this->assertInstanceOf('RKA\ContentTypeRenderer\SimplePsrStream', $response->getBody());
     }
 
@@ -271,7 +271,7 @@ class RendererTest extends \PHPUnit_Framework_TestCase
         $response  = $renderer->render($request, $response, $data);
 
         $this->assertSame('application/json', $response->getHeaderLine('Content-Type'));
-        $this->assertSame(json_encode($data, JSON_PRETTY_PRINT), (string)$response->getBody());
+        $this->assertSame(json_encode($data, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES), (string)$response->getBody());
         $this->assertInstanceOf('RKA\ContentTypeRenderer\SimplePsrStream', $response->getBody());
     }
 }
