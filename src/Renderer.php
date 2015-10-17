@@ -32,11 +32,13 @@ class Renderer
 
         switch ($contentType) {
             case 'text/html':
+                $data = json_decode(json_encode($data), true);
                 $output = $this->renderHtml($data);
                 break;
 
             case 'application/xml':
             case 'text/xml':
+                $data = json_decode(json_encode($data), true);
                 $output = $this->renderXml($data);
                 break;
 
@@ -280,7 +282,7 @@ HTML;
                 if (!is_numeric($key)) {
                     $subnode = $xmlElement->addChild("$key");
 
-                    if (count($value) >1 && is_array($value)) {
+                    if (count($value) > 1 && is_array($value)) {
                         $jump = false;
                         $count = 1;
                         foreach ($value as $k => $v) {
