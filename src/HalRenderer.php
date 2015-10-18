@@ -8,7 +8,7 @@ use RuntimeException;
 
 class HalRenderer extends Renderer
 {
-    protected $knownContentTypes = [
+    protected $knownMediaTypes = [
         'application/hal+json',
         'application/hal+xml',
         'application/json',

@@ -8,29 +8,29 @@ use RuntimeException;
 
 class Renderer
 {
-    protected $defaultContentType = 'application/json';
-    protected $knownContentTypes = ['application/json', 'application/xml', 'text/xml', 'text/html'];
+    protected $defaultMediaType = 'application/json';
+    protected $knownMediaTypes = ['application/json', 'application/xml', 'text/xml', 'text/html'];
     protected $htmlPrefix;
     protected $htmlPostfix;
 
     public function render(RequestInterface $request, ResponseInterface $response, $data)
     {
-        $contentType = $this->determineMediaType($request->getHeaderLine('Accept'));
+        $mediaType = $this->determineMediaType($request->getHeaderLine('Accept'));
 
-        $output = $this->renderOutput($contentType, $data);
+        $output = $this->renderOutput($mediaType, $data);
         $response = $this->writeBody($response, $output);
-        $response = $response->withHeader('Content-type', $contentType);
+        $response = $response->withHeader('Content-type', $mediaType);
         
         return $response;
     }
 
-    protected function renderOutput($contentType, $data)
+    protected function renderOutput($mediaType, $data)
     {
         if (!is_array($data)) {
             throw new RuntimeException('Data is not an array');
         }
 
-        switch ($contentType) {
+        switch ($mediaType) {
             case 'text/html':
                 $data = json_decode(json_encode($data), true);
                 $output = $this->renderHtml($data);
@@ -47,7 +47,7 @@ class Renderer
                 break;
             
             default:
-                throw new RuntimeException("Unknown content type $contentType");
+                throw new RuntimeException("Unknown media type $mediaType");
         }
 
         return $output;
@@ -125,7 +125,7 @@ class Renderer
     }
 
     /**
-     * Read the accept header and determine which content type we know about
+     * Read the accept header and determine which media type we know about
      * is wanted.
      *
      * @param  string $acceptHeader Accept header from request
@@ -136,33 +136,33 @@ class Renderer
         $list = explode(',', $acceptHeader);
         
         foreach ($list as $type) {
-            if (in_array($type, $this->knownContentTypes)) {
+            if (in_array($type, $this->knownMediaTypes)) {
                 return $type;
             }
         }
 
-        return $this->getDefaultContentType();
+        return $this->getDefaultMediaType();
     }
 
     /**
-     * Getter for defaultContentType
+     * Getter for defaultMediaType
      *
      * @return string
      */
-    public function getDefaultContentType()
+    public function getDefaultMediaType()
     {
-        return $this->defaultContentType;
+        return $this->defaultMediaType;
     }
     
     /**
-     * Setter for defaultContentType
+     * Setter for defaultMediaType
      *
-     * @param string $defaultContentType Value to set
+     * @param string $defaultMediaType Value to set
      * @return self
      */
-    public function setDefaultContentType($defaultContentType)
+    public function setDefaultMediaType($defaultMediaType)
     {
-        $this->defaultContentType = $defaultContentType;
+        $this->defaultMediaType = $defaultMediaType;
         return $this;
     }
 

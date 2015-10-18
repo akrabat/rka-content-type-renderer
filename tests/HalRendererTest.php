@@ -11,23 +11,23 @@ use RuntimeException;
 class HalRendererTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * Test that a given array is rendered to the correct content type
+     * Test that a given array is rendered to the correct media type
      *
      * @dataProvider rendererProvider
      */
-    public function testRenderer($contentType, $data, $expectedContentType, $expectedBody)
+    public function testRenderer($mediaType, $data, $expectedMediaType, $expectedBody)
     {
         $renderer = new Renderer();
 
         $request = (new Request())
             ->withUri(new Uri('http://example.com'))
-            ->withAddedHeader('Accept', $contentType);
+            ->withAddedHeader('Accept', $mediaType);
 
         $response = new Response();
 
         $response  = $renderer->render($request, $response, $data);
 
-        $this->assertSame($expectedContentType, $response->getHeaderLine('Content-Type'));
+        $this->assertSame($expectedMediaType, $response->getHeaderLine('Content-Type'));
         $this->assertSame($expectedBody, (string)$response->getBody());
     }
 
@@ -35,9 +35,9 @@ class HalRendererTest extends \PHPUnit_Framework_TestCase
      * Data provider for testRenderer()
      *
      * Array format:
-     *     0 => Accept header content type in Request
+     *     0 => Accept header media type in Request
      *     1 => Data array to be rendered
-     *     2 => Expected content type in Response
+     *     2 => Expected media type in Response
      *     3 => Expected body string in Response
      *
      * @return array

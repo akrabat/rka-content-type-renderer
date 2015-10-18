@@ -11,26 +11,26 @@ use RuntimeException;
 class RendererTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * Test that a given array is rendered to the correct content type
+     * Test that a given array is rendered to the correct media type
      *
      * @dataProvider rendererProvider
      */
-    public function testRenderer($contentType, $data, $expectedContentType, $expectedBody, $defaultContentType)
+    public function testRenderer($mediaType, $data, $expectedMediaType, $expectedBody, $defaultMediaType)
     {
         $renderer = new Renderer();
-        if ($defaultContentType) {
-            $renderer->setDefaultContentType($defaultContentType);
+        if ($defaultMediaType) {
+            $renderer->setDefaultMediaType($defaultMediaType);
         }
 
         $request = (new Request())
             ->withUri(new Uri('http://example.com'))
-            ->withAddedHeader('Accept', $contentType);
+            ->withAddedHeader('Accept', $mediaType);
 
         $response = new Response();
 
         $response  = $renderer->render($request, $response, $data);
 
-        $this->assertSame($expectedContentType, $response->getHeaderLine('Content-Type'));
+        $this->assertSame($expectedMediaType, $response->getHeaderLine('Content-Type'));
         $this->assertSame($expectedBody, (string)$response->getBody());
         $this->assertInstanceOf(Stream::class, $response->getBody());
     }
@@ -39,11 +39,11 @@ class RendererTest extends \PHPUnit_Framework_TestCase
      * Data provider for testRenderer()
      *
      * Array format:
-     *     0 => Accept header content type in Request
+     *     0 => Accept header media type in Request
      *     1 => Data array to be rendered
-     *     2 => Expected content type in Response
+     *     2 => Expected media type in Response
      *     3 => Expected body string in Response
-     *     4 => Default content type for Renderer
+     *     4 => Default media type for Renderer
      *
      * @return array
      */
@@ -135,10 +135,10 @@ class RendererTest extends \PHPUnit_Framework_TestCase
             ['text/xml', $data, 'text/xml', $expectedXML, null],
             ['text/html', $data, 'text/html', $expectedHTML, null],
 
-            // default to JSON for unknown content type
+            // default to JSON for unknown media type
             ['text/csv', $data, 'application/json', $expectedJson, null],
             
-            // default to HTML in this case for unknown content type
+            // default to HTML in this case for unknown media type
             ['text/csv', $data, 'text/html', $expectedHTML, 'text/html'],
 
             // Numeric array indexes can cause trouble for XML
