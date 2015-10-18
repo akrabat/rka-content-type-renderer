@@ -135,7 +135,6 @@ class Renderer
     {
         $list = explode(',', $acceptHeader);
         
-        
         foreach ($list as $type) {
             if (in_array($type, $this->knownContentTypes)) {
                 return $type;
