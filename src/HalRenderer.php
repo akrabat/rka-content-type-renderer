@@ -19,7 +19,7 @@ class HalRenderer extends Renderer
 
     public function render(RequestInterface $request, ResponseInterface $response, $data)
     {
-        $contentType = $this->determineContentType($request->getHeaderLine('Accept'));
+        $contentType = $this->determineMediaType($request->getHeaderLine('Accept'));
 
         $output = $this->renderOutput($contentType, $data);
         $response = $this->writeBody($response, $output);

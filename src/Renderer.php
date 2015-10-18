@@ -15,7 +15,7 @@ class Renderer
 
     public function render(RequestInterface $request, ResponseInterface $response, $data)
     {
-        $contentType = $this->determineContentType($request->getHeaderLine('Accept'));
+        $contentType = $this->determineMediaType($request->getHeaderLine('Accept'));
 
         $output = $this->renderOutput($contentType, $data);
         $response = $this->writeBody($response, $output);
@@ -131,7 +131,7 @@ class Renderer
      * @param  string $acceptHeader Accept header from request
      * @return string
      */
-    protected function determineContentType($acceptHeader)
+    protected function determineMediaType($acceptHeader)
     {
         $list = explode(',', $acceptHeader);
         
