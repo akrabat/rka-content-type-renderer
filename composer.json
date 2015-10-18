@@ -15,7 +15,8 @@
         }
     ],
     "require": {
-        "psr/http-message": "^1.0"
+        "psr/http-message": "^1.0",
+        "willdurand/negotiation": "^2.0"
     },
     "suggest": {
         "nocarrier/hal": "For creating HAL documents that can be rendered using HalRenderer"

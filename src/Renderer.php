@@ -3,6 +3,7 @@ namespace RKA\ContentTypeRenderer;
 
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Negotiation\Negotiator;
 use Slim\Http\Body;
 use RuntimeException;
 
@@ -133,11 +134,12 @@ class Renderer
      */
     protected function determineMediaType($acceptHeader)
     {
-        $list = explode(',', $acceptHeader);
-        
-        foreach ($list as $type) {
-            if (in_array($type, $this->knownMediaTypes)) {
-                return $type;
+        if (!empty($acceptHeader)) {
+            $negotiator = new Negotiator();
+            $mediaType = $negotiator->getBest($acceptHeader, $this->knownMediaTypes);
+
+            if ($mediaType) {
+                return $mediaType->getValue();
             }
         }
 
