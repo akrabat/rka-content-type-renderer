@@ -55,6 +55,7 @@ $hal = new Nocarrier\Hal(
 $renderer = new RKA\ContentTypeRenderer\HalRenderer();
 $response  = $renderer->render($request, $response, $hal);
 return $response->withStatus(200);
+```
 
 ## Arrays of objects
 
