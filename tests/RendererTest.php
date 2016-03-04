@@ -149,13 +149,13 @@ class RendererTest extends \PHPUnit_Framework_TestCase
     /**
      * The data has to be an array
      */
-    public function testCaseWhenDataIsNotAnArray()
+    public function testCaseWhenDataIsNotAnArrayAndAcceptIsXml()
     {
         $data = 'Alex';
 
         $request = (new Request())
             ->withUri(new Uri('http://example.com'))
-            ->withAddedHeader('Accept', 'application/json');
+            ->withAddedHeader('Accept', 'text/xml');
         $response = new Response();
         $renderer = new Renderer();
 
