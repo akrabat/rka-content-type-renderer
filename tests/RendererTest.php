@@ -147,15 +147,32 @@ class RendererTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * The data has to be an array if accept header is XML
+     */
+    public function testCaseWhenDataIsNotScalarOrArray()
+    {
+        $data = new \stdClass();
+
+        $request = (new Request())
+            ->withUri(new Uri('http://example.com'))
+            ->withAddedHeader('Accept', 'application/json');
+        $response = new Response();
+        $renderer = new Renderer();
+
+        $this->setExpectedException(RuntimeException::class, 'Data must be of type scalar or array');
+        $response  = $renderer->render($request, $response, $data);
+    }
+
+    /**
      * The data has to be an array
      */
-    public function testCaseWhenDataIsNotAnArray()
+    public function testCaseWhenDataIsNotAnArrayAndAcceptIsXml()
     {
         $data = 'Alex';
 
         $request = (new Request())
             ->withUri(new Uri('http://example.com'))
-            ->withAddedHeader('Accept', 'application/json');
+            ->withAddedHeader('Accept', 'text/xml');
         $response = new Response();
         $renderer = new Renderer();
 
