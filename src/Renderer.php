@@ -27,10 +27,6 @@ class Renderer
 
     protected function renderOutput($mediaType, $data)
     {
-        if (!is_array($data)) {
-            throw new RuntimeException('Data is not an array');
-        }
-
         switch ($mediaType) {
             case 'text/html':
                 $data = json_decode(json_encode($data), true);
@@ -39,6 +35,10 @@ class Renderer
 
             case 'application/xml':
             case 'text/xml':
+                if (!is_array($data)) {
+                    throw new RuntimeException('Data is not an array');
+                }
+
                 $data = json_decode(json_encode($data), true);
                 $output = $this->renderXml($data);
                 break;
