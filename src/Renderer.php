@@ -27,6 +27,10 @@ class Renderer
 
     protected function renderOutput($mediaType, $data)
     {
+        if (!is_scalar($data) && !is_array($data)) {
+            throw new RuntimeException('Data must be of type scalar or array');
+        }
+
         switch ($mediaType) {
             case 'text/html':
                 $data = json_decode(json_encode($data), true);
