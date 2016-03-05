@@ -8,7 +8,8 @@ use Zend\Diactoros\Response;
 use Zend\Diactoros\Stream;
 use RuntimeException;
 
-class serializableClass implements \JsonSerializable {
+class serializableClass implements \JsonSerializable
+{
     protected $data;
 
     public function __construct($data)
@@ -43,7 +44,7 @@ class RendererTest extends \PHPUnit_Framework_TestCase
 
         $response = new Response();
 
-        $response  = $renderer->render($request, $response, $data);
+        $response = $renderer->render($request, $response, $data);
 
         $this->assertSame($expectedMediaType, $response->getHeaderLine('Content-Type'));
         $this->assertSame($expectedBody, (string)$response->getBody());
@@ -201,37 +202,51 @@ class RendererTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * The data has to be an array if accept header is XML
+     * Test that given data type, which is not allowed by given media type, throws an exception
+     *
+     * @dataProvider rendererErrorsProvider
      */
-    public function testCaseWhenDataIsNotScalarOrArray()
+    public function testRendererErrors($mediaType, $data, $error)
     {
-        $data = new \stdClass();
-
-        $request = (new Request())
+        $request  = (new Request())
             ->withUri(new Uri('http://example.com'))
-            ->withAddedHeader('Accept', 'application/json');
+            ->withAddedHeader('Accept', $mediaType);
         $response = new Response();
         $renderer = new Renderer();
 
-        $this->setExpectedException(RuntimeException::class, 'Data must be of type scalar or array');
-        $response  = $renderer->render($request, $response, $data);
+        $this->setExpectedException(RuntimeException::class, $error);
+        $response = $renderer->render($request, $response, $data);
     }
 
     /**
-     * The data has to be an array
+     * Data provider for testRendererErrors()
+     *
+     * Array format:
+     *     0 => Accept header media type in Request
+     *     1 => Data array to be rendered
+     *     2 => Expected error string
+     *
+     * @return array
      */
-    public function testCaseWhenDataIsNotAnArrayAndAcceptIsXml()
+    public function rendererErrorsProvider()
     {
-        $data = 'Alex';
+        $class     = new \stdClass();
+        $scalar    = 'Hello World';
+        $ressource = fopen('php://input', 'r');
 
-        $request = (new Request())
-            ->withUri(new Uri('http://example.com'))
-            ->withAddedHeader('Accept', 'text/xml');
-        $response = new Response();
-        $renderer = new Renderer();
+        $xmlError  = 'Data for mediaType text/xml must be array or JsonSerializable';
+        $htmlError = 'Data for mediaType text/html must be scalar or array or JsonSerializable';
+        $jsonError = 'Data for mediaType application/json must be scalar or array or JsonSerializable';
 
-        $this->setExpectedException(RuntimeException::class, 'Data is not an array');
-        $response  = $renderer->render($request, $response, $data);
+        return [
+            ['application/json', $class, $jsonError],
+            ['application/json', $ressource, $jsonError],
+            ['text/xml', $class, $xmlError],
+            ['text/xml', $scalar, $xmlError],
+            ['text/xml', $ressource, $xmlError],
+            ['text/html', $class, $htmlError],
+            ['text/html', $ressource, $htmlError]
+        ];
     }
 
     /**
@@ -257,7 +272,7 @@ class RendererTest extends \PHPUnit_Framework_TestCase
         $renderer->setHtmlPrefix('');
         $renderer->setHtmlPostfix('');
 
-        $response  = $renderer->render($request, $response, $data);
+        $response = $renderer->render($request, $response, $data);
 
         $expectedBody = '<ul>
 <li><strong>items:</strong> <ul>
@@ -303,10 +318,10 @@ class RendererTest extends \PHPUnit_Framework_TestCase
         $response = $response->withBody(new Stream('php://temp', 'r'));
 
         $renderer = new Renderer();
-        $response  = $renderer->render($request, $response, $data);
+        $response = $renderer->render($request, $response, $data);
 
         $this->assertSame('application/json', $response->getHeaderLine('Content-Type'));
-        $this->assertSame(json_encode($data, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES), (string)$response->getBody());
+        $this->assertSame(json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES), (string)$response->getBody());
         $this->assertInstanceOf('RKA\ContentTypeRenderer\SimplePsrStream', $response->getBody());
     }
 
@@ -339,10 +354,10 @@ class RendererTest extends \PHPUnit_Framework_TestCase
         $response = $response->withBody(new Stream('norewind://temp', 'a'));
 
         $renderer = new Renderer();
-        $response  = $renderer->render($request, $response, $data);
+        $response = $renderer->render($request, $response, $data);
 
         $this->assertSame('application/json', $response->getHeaderLine('Content-Type'));
-        $this->assertSame(json_encode($data, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES), (string)$response->getBody());
+        $this->assertSame(json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES), (string)$response->getBody());
         $this->assertInstanceOf('RKA\ContentTypeRenderer\SimplePsrStream', $response->getBody());
     }
 }
