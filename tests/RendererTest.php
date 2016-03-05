@@ -8,6 +8,21 @@ use Zend\Diactoros\Response;
 use Zend\Diactoros\Stream;
 use RuntimeException;
 
+class serializableClass implements \JsonSerializable {
+    protected $data;
+
+    public function __construct($data)
+    {
+        $this->data = $data;
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->data;
+    }
+}
+
+
 class RendererTest extends \PHPUnit_Framework_TestCase
 {
     /**
