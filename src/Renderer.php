@@ -11,6 +11,7 @@ class Renderer
 {
     protected $defaultMediaType = 'application/json';
     protected $knownMediaTypes = ['application/json', 'application/xml', 'text/xml', 'text/html'];
+    protected $mediaSubtypesToAllowedDataTypesMap = ['xml' => ['array', 'JsonSerializable'], 'json' => ['scalar','array', 'JsonSerializable'], 'html' => ['scalar','array', 'JsonSerializable']];
     protected $htmlPrefix;
     protected $htmlPostfix;
 
@@ -18,19 +19,48 @@ class Renderer
     {
         $mediaType = $this->determineMediaType($request->getHeaderLine('Accept'));
 
+        $mediaSubType = explode('/', $mediaType)[1];
+        $dataIsValidForMediatype = $this->isDataValidForMediaType($mediaSubType, $data);
+        if (!$dataIsValidForMediatype) {
+            throw new RuntimeException('Data for mediaType ' . $mediaType . ' must be ' . implode($this->mediaSubtypesToAllowedDataTypesMap[$mediaSubType], ' or '));
+        }
+
         $output = $this->renderOutput($mediaType, $data);
         $response = $this->writeBody($response, $output);
         $response = $response->withHeader('Content-type', $mediaType);
-        
+
         return $response;
+    }
+
+    protected function isDataValidForMediaType($mediaSubType, $data)
+    {
+        $allwedDataTypes = $this->mediaSubtypesToAllowedDataTypesMap[$mediaSubType];
+
+        foreach ($allwedDataTypes as $allowedDataType) {
+            switch($allowedDataType) {
+                case 'scalar':
+                    if (is_scalar($data)) {
+                        return true;
+                    }
+                    break;
+                case 'array':
+                    if (is_array($data)) {
+                        return true;
+                    }
+                    break;
+                case 'JsonSerializable':
+                    if ($data instanceof \JsonSerializable) {
+                        return true;
+                    }
+                    break;
+            }
+        }
+
+        return false;
     }
 
     protected function renderOutput($mediaType, $data)
     {
-        if (!is_scalar($data) && !is_array($data)) {
-            throw new RuntimeException('Data must be of type scalar or array');
-        }
-
         switch ($mediaType) {
             case 'text/html':
                 $data = json_decode(json_encode($data), true);
@@ -39,10 +69,6 @@ class Renderer
 
             case 'application/xml':
             case 'text/xml':
-                if (!is_array($data)) {
-                    throw new RuntimeException('Data is not an array');
-                }
-
                 $data = json_decode(json_encode($data), true);
                 $output = $this->renderXml($data);
                 break;
@@ -50,7 +76,7 @@ class Renderer
             case 'application/json':
                 $output = json_encode($data, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
                 break;
-            
+
             default:
                 throw new RuntimeException("Unknown media type $mediaType");
         }
@@ -96,12 +122,17 @@ class Renderer
     /**
      * Recursively render an array to an HTML list
      *
-     * @param array $content data to be rendered
+     * @param mixed $content data to be rendered
      *
      * @return null
      */
-    protected function arrayToHtml(array $content, $html = '')
+    protected function arrayToHtml($content, $html = '')
     {
+        // scalar types can be return directly
+        if (is_scalar($content)) {
+            return $content;
+        }
+
         $html = "<ul>\n";
 
         // field name
@@ -159,7 +190,7 @@ class Renderer
     {
         return $this->defaultMediaType;
     }
-    
+
     /**
      * Setter for defaultMediaType
      *
@@ -208,7 +239,7 @@ HTML;
         }
         return $this->htmlPrefix;
     }
-    
+
     /**
      * Setter for htmlPrefix
      *
@@ -220,7 +251,7 @@ HTML;
         $this->htmlPrefix = $htmlPrefix;
         return $this;
     }
-    
+
     /**
      * Getter for htmlPostfix
      *
@@ -238,7 +269,7 @@ HTML;
         }
         return $this->htmlPostfix;
     }
-    
+
     /**
      * Setter for htmlPostfix
      *
@@ -264,7 +295,7 @@ HTML;
         $dom->preserveWhiteSpace = false;
         $dom->formatOutput = true;
         $dom->loadXML($xml->asXML());
-        
+
         return $dom->saveXML();
     }
 
