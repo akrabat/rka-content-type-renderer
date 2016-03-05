@@ -65,23 +65,27 @@ class RendererTest extends \PHPUnit_Framework_TestCase
     public function rendererProvider()
     {
 
-        $data = [
+        $dataArray = [
             'items' => [
                 [
-                    'name' => 'Alex',
+                    'name'     => 'Alex',
                     'is_admin' => true,
                 ],
                 [
-                    'name' => 'Robin',
+                    'name'     => 'Robin',
                     'is_admin' => false,
-                    'link' => 'http://example.com',
+                    'link'     => 'http://example.com',
                 ],
             ],
         ];
 
-        $serializableClass = new serializableClass($data);
+        $dataScalar = 'Hello World';
 
-        $expectedJson = json_encode($data, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+        $dataSerializableClass = new serializableClass($dataArray);
+
+        $expectedJson = json_encode($dataArray, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+
+        $expectedScalarJson = '"Hello World"';
 
         $expectedXML = '<?xml version="1.0"?>
 <root>
@@ -139,6 +143,32 @@ class RendererTest extends \PHPUnit_Framework_TestCase
 </html>
 ';
 
+        $expectedScalarHTML = '<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <style>
+    body {
+        font-family: Helvetica, Arial, sans-serif;
+        font-size: 14px;
+        color: #000;
+        padding: 5px;
+    }
+
+    ul {
+        padding-bottom: 15px;
+        padding-left: 20px;
+    }
+    a {
+        color: #2368AF;
+    }
+    </style>
+</head>
+<body>Hello World</body>
+</html>
+';
+
         $expectedXML2 = '<?xml version="1.0"?>
 <root>
   <_0>1</_0>
@@ -148,25 +178,25 @@ class RendererTest extends \PHPUnit_Framework_TestCase
 ';
 
         return [
-            ['application/json', $data, 'application/json', $expectedJson, null],
-            ['application/json', $serializableClass, 'application/json', $expectedJson, null],
-            ['application/xml', $data, 'application/xml', $expectedXML, null],
-            ['application/xml', $serializableClass, 'application/xml', $expectedXML, null],
-            ['text/xml', $data, 'text/xml', $expectedXML, null],
-            ['text/xml', $serializableClass, 'text/xml', $expectedXML, null],
-            ['text/html', $data, 'text/html', $expectedHTML, null],
-            ['text/html', $serializableClass, 'text/html', $expectedHTML, null],
+            ['application/json', $dataArray, 'application/json', $expectedJson, null],
+            ['application/json', $dataScalar, 'application/json', $expectedScalarJson, null],
+            ['application/json', $dataSerializableClass, 'application/json', $expectedJson, null],
+            ['application/xml', $dataArray, 'application/xml', $expectedXML, null],
+            ['application/xml', $dataSerializableClass, 'application/xml', $expectedXML, null],
+            ['text/xml', $dataArray, 'text/xml', $expectedXML, null],
+            ['text/xml', $dataSerializableClass, 'text/xml', $expectedXML, null],
+            ['text/html', $dataArray, 'text/html', $expectedHTML, null],
+            ['text/html', $dataScalar, 'text/html', $expectedScalarHTML, null],
+            ['text/html', $dataSerializableClass, 'text/html', $expectedHTML, null],
 
             // default to JSON for unknown media type
-            ['text/csv', $data, 'application/json', $expectedJson, null],
-            ['text/csv', $serializableClass, 'application/json', $expectedJson, null],
+            ['text/csv', $dataArray, 'application/json', $expectedJson, null],
 
             // default to HTML in this case for unknown media type
-            ['text/csv', $data, 'text/html', $expectedHTML, 'text/html'],
-            ['text/csv', $serializableClass, 'text/html', $expectedHTML, 'text/html'],
+            ['text/csv', $dataArray, 'text/html', $expectedHTML, 'text/html'],
 
             // Numeric array indexes can cause trouble for XML
-            ['text/xml', [[1], 'foo'=>'bar', 3], 'text/xml', $expectedXML2, null],
+            ['text/xml', [[1], 'foo' => 'bar', 3], 'text/xml', $expectedXML2, null],
         ];
     }
 
