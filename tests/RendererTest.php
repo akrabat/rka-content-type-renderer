@@ -64,6 +64,7 @@ class RendererTest extends \PHPUnit_Framework_TestCase
      */
     public function rendererProvider()
     {
+
         $data = [
             'items' => [
                 [
@@ -77,6 +78,8 @@ class RendererTest extends \PHPUnit_Framework_TestCase
                 ],
             ],
         ];
+
+        $serializableClass = new serializableClass($data);
 
         $expectedJson = json_encode($data, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
 
@@ -146,15 +149,21 @@ class RendererTest extends \PHPUnit_Framework_TestCase
 
         return [
             ['application/json', $data, 'application/json', $expectedJson, null],
+            ['application/json', $serializableClass, 'application/json', $expectedJson, null],
             ['application/xml', $data, 'application/xml', $expectedXML, null],
+            ['application/xml', $serializableClass, 'application/xml', $expectedXML, null],
             ['text/xml', $data, 'text/xml', $expectedXML, null],
+            ['text/xml', $serializableClass, 'text/xml', $expectedXML, null],
             ['text/html', $data, 'text/html', $expectedHTML, null],
+            ['text/html', $serializableClass, 'text/html', $expectedHTML, null],
 
             // default to JSON for unknown media type
             ['text/csv', $data, 'application/json', $expectedJson, null],
-            
+            ['text/csv', $serializableClass, 'application/json', $expectedJson, null],
+
             // default to HTML in this case for unknown media type
             ['text/csv', $data, 'text/html', $expectedHTML, 'text/html'],
+            ['text/csv', $serializableClass, 'text/html', $expectedHTML, 'text/html'],
 
             // Numeric array indexes can cause trouble for XML
             ['text/xml', [[1], 'foo'=>'bar', 3], 'text/xml', $expectedXML2, null],
