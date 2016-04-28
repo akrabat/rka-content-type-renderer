@@ -12,6 +12,7 @@ class Renderer
     protected $defaultMediaType = 'application/json';
     protected $knownMediaTypes = ['application/json', 'application/xml', 'text/xml', 'text/html'];
     protected $mediaSubtypesToAllowedDataTypesMap = ['xml' => ['array', 'JsonSerializable'], 'json' => ['scalar','array', 'JsonSerializable'], 'html' => ['scalar','array', 'JsonSerializable']];
+    protected $xmlRootElementName = 'root';
     protected $htmlPrefix;
     protected $htmlPostfix;
 
@@ -283,6 +284,28 @@ HTML;
     }
 
     /**
+     * Getter for xmlRootElementName
+     *
+     * @return string
+     */
+    public function getXmlRootElementName()
+    {
+        return $this->xmlRootElementName;
+    }
+
+    /**
+     * Setter for xmlRootElementName
+     *
+     * @param string $xmlRootElementName
+     * @return self
+     */
+    public function setXmlRootElementName($xmlRootElementName)
+    {
+        $this->xmlRootElementName = $xmlRootElementName;
+        return $this;
+    }
+
+    /**
      * Render Array as XML
      *
      * @return string
@@ -310,7 +333,8 @@ HTML;
     protected function arrayToXml($data, $xmlElement = null)
     {
         if ($xmlElement === null) {
-            $xmlElement = new \SimpleXMLElement("<?xml version=\"1.0\"?><root></root>");
+            $rootElementName = $this->getXmlRootElementName();
+            $xmlElement = new \SimpleXMLElement("<?xml version=\"1.0\"?><$rootElementName></$rootElementName>");
         }
 
         foreach ($data as $key => $value) {
