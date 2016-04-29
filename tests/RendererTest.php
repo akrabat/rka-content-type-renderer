@@ -102,6 +102,14 @@ class RendererTest extends \PHPUnit_Framework_TestCase
 </root>
 ';
 
+        $expectedXML2 = '<?xml version="1.0"?>
+<root>
+  <_0>1</_0>
+  <foo>bar</foo>
+  <_1>3</_1>
+</root>
+';
+
         $expectedHTML = '<!DOCTYPE html>
 <html>
 <head>
@@ -292,6 +300,53 @@ class RendererTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Change root element name
+     */
+    public function testXmlWithCustomRootElement()
+    {
+        $dataArray = [
+            'items' => [
+                [
+                    'name'     => 'Alex',
+                    'is_admin' => true,
+                ],
+                [
+                    'name'     => 'Robin',
+                    'is_admin' => false,
+                    'link'     => 'http://example.com',
+                ],
+            ],
+        ];
+
+        $expectedXMLCustomRoot = '<?xml version="1.0"?>
+<users>
+  <items>
+    <name>Alex</name>
+    <is_admin>1</is_admin>
+  </items>
+  <items>
+    <name>Robin</name>
+    <is_admin>0</is_admin>
+    <link>http://example.com</link>
+  </items>
+</users>
+';
+        $request = (new Request())
+            ->withUri(new Uri('http://example.com'))
+            ->withAddedHeader('Accept', 'application/xml');
+
+        $response = new Response();
+        $renderer = new Renderer();
+
+        $renderer->setXmlRootElementName('users');
+
+        $response = $renderer->render($request, $response, $dataArray);
+
+        $this->assertSame('application/xml', $response->getHeaderLine('Content-Type'));
+        $this->assertSame($expectedXMLCustomRoot, (string)$response->getBody());
+    }
+    
+    /**
      * If the stream in the Response is not writable, then we need to replace
      * it with our own SimplePsrStream
      */
@@ -360,4 +415,5 @@ class RendererTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES), (string)$response->getBody());
         $this->assertInstanceOf('RKA\ContentTypeRenderer\SimplePsrStream', $response->getBody());
     }
+
 }
