@@ -8,22 +8,6 @@ use Zend\Diactoros\Response;
 use Zend\Diactoros\Stream;
 use RuntimeException;
 
-class serializableClass implements \JsonSerializable
-{
-    protected $data;
-
-    public function __construct($data)
-    {
-        $this->data = $data;
-    }
-
-    public function jsonSerialize()
-    {
-        return $this->data;
-    }
-}
-
-
 class RendererTest extends \PHPUnit_Framework_TestCase
 {
     /**
@@ -82,7 +66,7 @@ class RendererTest extends \PHPUnit_Framework_TestCase
 
         $dataScalar = 'Hello World';
 
-        $dataSerializableClass = new serializableClass($dataArray);
+        $dataSerializableClass = new Support\SerializableClass($dataArray);
 
         $expectedJson = json_encode($dataArray, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
@@ -415,5 +399,4 @@ class RendererTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES), (string)$response->getBody());
         $this->assertInstanceOf('RKA\ContentTypeRenderer\SimplePsrStream', $response->getBody());
     }
-
 }

@@ -11,7 +11,11 @@ class Renderer
 {
     protected $defaultMediaType = 'application/json';
     protected $knownMediaTypes = ['application/json', 'application/xml', 'text/xml', 'text/html'];
-    protected $mediaSubtypesToAllowedDataTypesMap = ['xml' => ['array', 'JsonSerializable'], 'json' => ['scalar','array', 'JsonSerializable'], 'html' => ['scalar','array', 'JsonSerializable']];
+    protected $mediaSubtypesToAllowedDataTypesMap = [
+        'xml' => ['array', 'JsonSerializable'],
+        'json' => ['scalar','array', 'JsonSerializable'],
+        'html' => ['scalar','array', 'JsonSerializable']
+    ];
     protected $xmlRootElementName = 'root';
     protected $htmlPrefix;
     protected $htmlPostfix;
@@ -23,7 +27,8 @@ class Renderer
         $mediaSubType = explode('/', $mediaType)[1];
         $dataIsValidForMediatype = $this->isDataValidForMediaType($mediaSubType, $data);
         if (!$dataIsValidForMediatype) {
-            throw new RuntimeException('Data for mediaType ' . $mediaType . ' must be ' . implode($this->mediaSubtypesToAllowedDataTypesMap[$mediaSubType], ' or '));
+            throw new RuntimeException('Data for mediaType ' . $mediaType . ' must be '
+                . implode($this->mediaSubtypesToAllowedDataTypesMap[$mediaSubType], ' or '));
         }
 
         $output = $this->renderOutput($mediaType, $data);
@@ -38,7 +43,7 @@ class Renderer
         $allwedDataTypes = $this->mediaSubtypesToAllowedDataTypesMap[$mediaSubType];
 
         foreach ($allwedDataTypes as $allowedDataType) {
-            switch($allowedDataType) {
+            switch ($allowedDataType) {
                 case 'scalar':
                     if (is_scalar($data)) {
                         return true;
