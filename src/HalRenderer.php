@@ -8,6 +8,12 @@ use RuntimeException;
 
 class HalRenderer extends Renderer
 {
+    /**
+     * Pretty print JSON (default true)
+     * @var bool
+     */
+    protected $pretty;
+
     protected $knownMediaTypes = [
         'application/hal+json',
         'application/hal+xml',
@@ -16,6 +22,11 @@ class HalRenderer extends Renderer
         'text/xml',
         'text/html'
     ];
+
+    public function __construct($pretty = true)
+    {
+        $this->pretty = (bool)$pretty;
+    }
 
     public function render(RequestInterface $request, ResponseInterface $response, $data)
     {
@@ -55,7 +66,7 @@ class HalRenderer extends Renderer
 
             case 'application/hal+json':
             case 'application/json':
-                $output = $data->asJson();
+                $output = $data->asJson($this->pretty);
                 break;
             
             default:

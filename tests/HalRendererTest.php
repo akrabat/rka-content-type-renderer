@@ -15,9 +15,9 @@ class HalRendererTest extends \PHPUnit_Framework_TestCase
      *
      * @dataProvider rendererProvider
      */
-    public function testRenderer($mediaType, $data, $expectedMediaType, $expectedBody)
+    public function testRenderer($mediaType, $data, $expectedMediaType, $expectedBody, $pretty)
     {
-        $renderer = new Renderer();
+        $renderer = new Renderer($pretty);
 
         $request = (new Request())
             ->withUri(new Uri('http://example.com'))
@@ -44,10 +44,7 @@ class HalRendererTest extends \PHPUnit_Framework_TestCase
      */
     public function rendererProvider()
     {
-        $data = new Hal(
-            '/foo',
-            [
-                'items' => [
+        $items = [
                     [
                         'name' => 'Alex',
                         'is_admin' => true,
@@ -56,27 +53,32 @@ class HalRendererTest extends \PHPUnit_Framework_TestCase
                         'name' => 'Robin',
                         'is_admin' => false,
                     ],
-                ],
+                ];
+
+        $data = new Hal(
+            '/foo',
+            [
+                'items' => $items,
             ]
         );
 
         $expectedJson = json_encode([
-            'items' => [
-                [
-                    'name' => 'Alex',
-                    'is_admin' => true,
-                ],
-                [
-                    'name' => 'Robin',
-                    'is_admin' => false,
-                ],
-            ],
+            'items' => $items,
             '_links' => [
                 'self' => [
                     'href' => '/foo',
                 ],
             ]
         ]);
+
+        $expectedPrettyJson = json_encode([
+            'items' => $items,
+            '_links' => [
+                'self' => [
+                    'href' => '/foo',
+                ],
+            ]
+        ], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
 
         $expectedXML = '<?xml version="1.0"?>' . PHP_EOL
                     . '<resource href="/foo"><items><name>Alex</name><is_admin>1</is_admin></items>'
@@ -132,12 +134,13 @@ class HalRendererTest extends \PHPUnit_Framework_TestCase
 ';
 
         return [
-            ['application/hal+json', $data, 'application/hal+json', $expectedJson],
-            ['application/json', $data, 'application/hal+json', $expectedJson],
-            ['application/hal+xml', $data, 'application/hal+xml', $expectedXML],
-            ['application/xml', $data, 'application/hal+xml', $expectedXML],
-            ['text/xml', $data, 'application/hal+xml', $expectedXML],
-            ['text/html', $data, 'text/html', $expectedHTML],
+            ['application/hal+json', $data, 'application/hal+json', $expectedJson, false],
+            ['application/json', $data, 'application/hal+json', $expectedJson, false],
+            ['application/json', $data, 'application/hal+json', $expectedPrettyJson, true],
+            ['application/hal+xml', $data, 'application/hal+xml', $expectedXML, false],
+            ['application/xml', $data, 'application/hal+xml', $expectedXML, false],
+            ['text/xml', $data, 'application/hal+xml', $expectedXML, false],
+            ['text/html', $data, 'text/html', $expectedHTML, false],
         ];
     }
 
