@@ -271,7 +271,6 @@ HTML;
 </html>
 
 HTML;
-
         }
         return $this->htmlPostfix;
     }

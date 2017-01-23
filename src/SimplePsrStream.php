@@ -195,7 +195,6 @@ class SimplePsrStream implements StreamInterface
         if (!$this->isSeekable() || rewind($this->stream) === false) {
             throw new RuntimeException('Could not rewind stream');
         }
-
     }
 
     /**
@@ -235,7 +234,6 @@ class SimplePsrStream implements StreamInterface
         }
 
         return $written;
-
     }
 
     /**
@@ -321,6 +319,5 @@ class SimplePsrStream implements StreamInterface
         }
 
         return isset($meta[$key]) ? $meta[$key] : null;
-
     }
 }

@@ -280,7 +280,6 @@ class RendererTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame('text/html', $response->getHeaderLine('Content-Type'));
         $this->assertSame($expectedBody, (string)$response->getBody());
-
     }
 
     /**
