@@ -3,7 +3,6 @@ namespace RKA\ContentTypeRenderer;
 
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Negotiation\Negotiator;
 use Slim\Http\Body;
 use RuntimeException;
 
@@ -185,6 +184,34 @@ class Renderer
         }
 
         return $this->getDefaultMediaType();
+    }
+
+    /**
+     * Read the accept header and work out which format is preferred
+     *
+     * @param  string $acceptHeader Accept header from request
+     * @param  string $default Default format to return if no allowedFormats are found
+     * @return string
+     */
+    public function determinePeferredFormat($acceptHeader, $allowedFormats = ['json', 'xml', 'html'], $default = 'json')
+    {
+        if (empty($acceptHeader)) {
+            return $default;
+        }
+
+        $negotiator = new Negotiator();
+        $elements = $negotiator->getOrderedElements($acceptHeader);
+
+        foreach ($elements as $element) {
+            $subpart = $element->getSubPart();
+            foreach ($allowedFormats as $format) {
+                if (stripos($subpart, $format) !== false) {
+                    return $format;
+                }
+            }
+        }
+
+        return $default;
     }
 
     /**

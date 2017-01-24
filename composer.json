@@ -19,13 +19,15 @@
         "willdurand/negotiation": "^2.0"
     },
     "suggest": {
-        "nocarrier/hal": "For creating HAL documents that can be rendered using HalRenderer"
+        "nocarrier/hal": "For creating HAL documents that can be rendered using HalRenderer",
+        "crell/api-problem": "For creating Api-Problem (RFC7801) data that can be rendered using ApiProblemRenderer"
     },
     "require-dev": {
         "zendframework/zend-diactoros": "^1.1",
         "nocarrier/hal": "^0.9.11",
         "phpunit/phpunit": "^4.8",
-        "squizlabs/php_codesniffer": "^2.3"
+        "squizlabs/php_codesniffer": "^2.3",
+        "crell/api-problem": "^2.0"
     },
     "autoload": {
         "psr-4": {
