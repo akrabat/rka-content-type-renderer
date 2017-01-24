@@ -57,6 +57,17 @@ $response  = $renderer->render($request, $response, $hal);
 return $response->withStatus(200);
 ```
 
+## ApiRenderer
+
+This component also supports [crell/ApiProblem][ApiProblem] objects with the `ApiProblemRenderer`:
+
+```php
+$problem = new Crell\ApiProblem("Something unexpected happened");
+$renderer = new RKA\ContentTypeRenderer\ApiProblemRenderer();
+$response  = $renderer->render($request, $response, $problem);
+return $response->withStatus(500);
+```
+
 ## Arrays of objects
 
 If you have an array of objects, then the renderer will still work as long
@@ -73,3 +84,4 @@ as the objects implement PHP's JsonSerializable interface.
 [Master]: https://travis-ci.org/akrabat/rka-content-type-renderer
 [Master image]: https://secure.travis-ci.org/akrabat/rka-content-type-renderer.svg?branch=master
 [hal]: https://github.com/blongden/hal
+[ApiProblem]: https://github.com/Crell/ApiProblem
