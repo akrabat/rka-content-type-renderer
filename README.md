@@ -75,7 +75,7 @@ as the objects implement PHP's JsonSerializable interface.
 
 ## Testing
 
-* Code coverage: ``$ phpcs``
+* Code style: ``$ phpcs``
 * Unit tests: ``$ phpunit``
 * Code coverage: ``$ phpunit --coverage-html ./build``
 
