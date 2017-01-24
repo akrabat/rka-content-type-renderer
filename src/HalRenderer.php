@@ -30,42 +30,42 @@ class HalRenderer extends Renderer
 
     public function render(RequestInterface $request, ResponseInterface $response, $data)
     {
-        $contentType = $this->determineMediaType($request->getHeaderLine('Accept'));
+        $format = $this->determinePeferredFormat(
+            $request->getHeaderLine('Accept'),
+            ['json', 'xml', 'html'],
+            'json'
+        );
 
-        $output = $this->renderOutput($contentType, $data);
-        $response = $this->writeBody($response, $output);
-
-        // set the HAL content type for JSON or XML
-        if (stripos($contentType, 'json')) {
-            $contentType = 'application/hal+json';
-        } elseif (stripos($contentType, 'xml')) {
-            $contentType = 'application/hal+xml';
+        $output = $this->renderOutput($format, $data);
+        if ($format == 'html') {
+            $contentType = 'text/html';
+        } else {
+            $contentType = 'application/hal+' . $format;
         }
+
+        $response = $this->writeBody($response, $output);
         $response = $response->withHeader('Content-type', $contentType);
         
         return $response;
     }
 
-    protected function renderOutput($contentType, $data)
+    protected function renderOutput($format, $data)
     {
         if (!$data instanceof Hal) {
             throw new RuntimeException('Data is not a Hal object');
         }
 
-        switch ($contentType) {
-            case 'text/html':
+        switch ($format) {
+            case 'html':
                 $data = json_decode($data->asJson(), true);
                 $output = $this->renderHtml($data);
                 break;
 
-            case 'application/hal+xml':
-            case 'application/xml':
-            case 'text/xml':
+            case 'xml':
                 $output = $data->asXml();
                 break;
 
-            case 'application/hal+json':
-            case 'application/json':
+            case 'json':
                 $output = $data->asJson($this->pretty);
                 break;
             
