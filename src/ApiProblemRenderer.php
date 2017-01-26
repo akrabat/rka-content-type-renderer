@@ -29,6 +29,10 @@ class ApiProblemRenderer extends Renderer
         
         $response = $this->writeBody($response, $output);
         $response = $response->withHeader('Content-type', $contentType);
+
+        if ($problem->getStatus() >= 100) {
+            $response = $response->withStatus($problem->getStatus());
+        }
         
         return $response;
     }

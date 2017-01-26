@@ -15,7 +15,7 @@ class ApiProblemRendererTest extends \PHPUnit_Framework_TestCase
      *
      * @dataProvider rendererProvider
      */
-    public function testRenderer($mediaType, $data, $expectedMediaType, $expectedBody, $pretty)
+    public function testRenderer($mediaType, $problem, $expectedMediaType, $expectedBody, $pretty)
     {
         $renderer = new Renderer($pretty);
 
@@ -25,10 +25,14 @@ class ApiProblemRendererTest extends \PHPUnit_Framework_TestCase
 
         $response = new Response();
 
-        $response  = $renderer->render($request, $response, $data);
+        $response  = $renderer->render($request, $response, $problem);
 
         $this->assertSame($expectedMediaType, $response->getHeaderLine('Content-Type'));
         $this->assertSame($expectedBody, (string)$response->getBody());
+
+        if ($problem->getStatus()) {
+            $this->assertSame($problem->getStatus(), $response->getStatusCode());
+        }
     }
 
     /**
@@ -44,11 +48,13 @@ class ApiProblemRendererTest extends \PHPUnit_Framework_TestCase
      */
     public function rendererProvider()
     {
-        $data = new ApiProblem("foo");
+        $problem = new ApiProblem("foo");
+        $problem->setStatus(400);
         
         $outputData = [
             'title' => 'foo',
             'type' => 'about:blank',
+            'status' => 400,
         ];
 
 
@@ -56,19 +62,19 @@ class ApiProblemRendererTest extends \PHPUnit_Framework_TestCase
         $expectedPrettyJson = json_encode($outputData, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
 
         $expectedXML = '<?xml version="1.0"?>' . PHP_EOL
-                    . '<problem><title>foo</title><type>about:blank</type></problem>'
+                    . '<problem><title>foo</title><type>about:blank</type><status>400</status></problem>'
                     . PHP_EOL;
 
         return [
-            ['application/hal+json', $data, 'application/problem+json', $expectedJson, false],
-            ['application/json', $data, 'application/problem+json', $expectedJson, false],
-            ['vnd.foo/anything+json', $data, 'application/problem+json', $expectedJson, false],
-            ['application/json', $data, 'application/problem+json', $expectedPrettyJson, true],
-            ['application/hal+xml', $data, 'application/problem+xml', $expectedXML, false],
-            ['application/xml', $data, 'application/problem+xml', $expectedXML, false],
-            ['text/xml', $data, 'application/problem+xml', $expectedXML, false],
-            ['vnd.foo/anything+xml', $data, 'application/problem+xml', $expectedXML, false],
-            ['text/html', $data, 'application/problem+json', $expectedJson, false],
+            ['application/hal+json', $problem, 'application/problem+json', $expectedJson, false],
+            ['application/json', $problem, 'application/problem+json', $expectedJson, false],
+            ['vnd.foo/anything+json', $problem, 'application/problem+json', $expectedJson, false],
+            ['application/json', $problem, 'application/problem+json', $expectedPrettyJson, true],
+            ['application/hal+xml', $problem, 'application/problem+xml', $expectedXML, false],
+            ['application/xml', $problem, 'application/problem+xml', $expectedXML, false],
+            ['text/xml', $problem, 'application/problem+xml', $expectedXML, false],
+            ['vnd.foo/anything+xml', $problem, 'application/problem+xml', $expectedXML, false],
+            ['text/html', $problem, 'application/problem+json', $expectedJson, false],
         ];
     }
 
@@ -77,7 +83,7 @@ class ApiProblemRendererTest extends \PHPUnit_Framework_TestCase
      */
     public function testCaseWhenDataIsNotAnApiProblemObject()
     {
-        $data = 'Alex';
+        $problem = 'Alex';
 
         $request = (new Request())
             ->withUri(new Uri('http://example.com'))
@@ -86,6 +92,6 @@ class ApiProblemRendererTest extends \PHPUnit_Framework_TestCase
         $renderer = new Renderer();
 
         $this->setExpectedException(RuntimeException::class, 'Data is not an ApiProblem object');
-        $response  = $renderer->render($request, $response, $data);
+        $response  = $renderer->render($request, $response, $problem);
     }
 }
