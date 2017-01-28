@@ -143,6 +143,9 @@ class HalRendererTest extends \PHPUnit_Framework_TestCase
             ['application/xml', $data, 'application/hal+xml', $expectedXML, false],
             ['text/xml', $data, 'application/hal+xml', $expectedXML, false],
             ['text/html', $data, 'text/html', $expectedHTML, false],
+
+            // specific media type wins
+            ['application/xml,application/hal+json', $data, 'application/hal+json', $expectedJson, false],
         ];
     }
 

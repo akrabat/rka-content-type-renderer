@@ -14,13 +14,11 @@ class HalRenderer extends Renderer
      */
     protected $pretty;
 
+    protected $defaultMediaType = null;
+
     protected $knownMediaTypes = [
         'application/hal+json',
         'application/hal+xml',
-        'application/json',
-        'application/xml',
-        'text/xml',
-        'text/html'
     ];
 
     public function __construct($pretty = true)
@@ -30,11 +28,17 @@ class HalRenderer extends Renderer
 
     public function render(RequestInterface $request, ResponseInterface $response, $data)
     {
-        $format = $this->determinePeferredFormat(
-            $request->getHeaderLine('Accept'),
-            ['json', 'xml', 'html'],
-            'json'
-        );
+        // Look for HAL specific media types first. If none, then find preferred format
+        $mediaType = $this->determineMediaType($request->getHeaderLine('Accept'));
+        if ($mediaType) {
+            list ($_, $format) = explode('+', $mediaType);
+        } else {
+            $format = $this->determinePeferredFormat(
+                $request->getHeaderLine('Accept'),
+                ['json', 'xml', 'html'],
+                'json'
+            );
+        }
 
         $output = $this->renderOutput($format, $data);
         if ($format == 'html') {

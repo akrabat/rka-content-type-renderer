@@ -8,6 +8,13 @@ use RuntimeException;
 
 class ApiProblemRenderer extends Renderer
 {
+    protected $defaultMediaType = null;
+
+    protected $knownMediaTypes = [
+        'application/problem+json',
+        'application/problem+xml',
+    ];
+
     /**
      * Pretty print output (default true)
      * @var bool
@@ -21,7 +28,14 @@ class ApiProblemRenderer extends Renderer
 
     public function render(RequestInterface $request, ResponseInterface $response, $problem)
     {
-        $format = $this->determinePeferredFormat($request->getHeaderLine('Accept'), ['json', 'xml'], 'json');
+        // Look for API Problem specific media types first. If none, then find preferred format
+        $mediaType = $this->determineMediaType($request->getHeaderLine('Accept'));
+        if ($mediaType) {
+            list ($_, $format) = explode('+', $mediaType);
+        } else {
+            $format = $this->determinePeferredFormat($request->getHeaderLine('Accept'), ['json', 'xml'], 'json');
+        }
+
 
         // set the ProblemAPi content type for JSON or XML
         $output = $this->renderOutput($format, $problem);

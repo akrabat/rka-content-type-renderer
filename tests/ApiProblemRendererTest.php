@@ -75,6 +75,9 @@ class ApiProblemRendererTest extends \PHPUnit_Framework_TestCase
             ['text/xml', $problem, 'application/problem+xml', $expectedXML, false],
             ['vnd.foo/anything+xml', $problem, 'application/problem+xml', $expectedXML, false],
             ['text/html', $problem, 'application/problem+json', $expectedJson, false],
+
+            // Specific media type wins
+            ['application/hal+json,application/problem+xml', $problem, 'application/problem+xml', $expectedXML, false],
         ];
     }
 
