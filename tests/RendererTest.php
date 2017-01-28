@@ -10,6 +10,40 @@ use RuntimeException;
 
 class RendererTest extends \PHPUnit_Framework_TestCase
 {
+    public function determinePeferredFormatProvider()
+    {
+        return [
+            [   // normal
+                'application/json', ['json', 'xml', 'html'], null, 'json'
+            ],
+            [   // invalid accept header
+                'tex', ['json', 'xml', 'html'], 'json', 'json'
+            ],
+            [   // empty accept header
+                '', ['json', 'xml', 'html'], 'json', 'json'
+            ],
+            [   // accept header not in list
+                'text/csv', ['json', 'xml', 'html'], 'json', 'json'
+            ],
+            [   // no allowed formats
+                'text/csv', [], 'json', 'json'
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider determinePeferredFormatProvider
+     */
+    public function testDeterminePreferredFormat($acceptHeader, $allowedFormats, $defaultFormat, $expectedFormat)
+    {
+
+        $renderer = new Renderer();
+        $format = $renderer->determinePeferredFormat($acceptHeader, $allowedFormats, $defaultFormat);
+
+        $this->assertSame($expectedFormat, $format);
+    }
+
+
     /**
      * Test that a given array is rendered to the correct media type
      *

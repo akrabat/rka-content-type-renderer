@@ -1,10 +1,11 @@
 <?php
 namespace RKA\ContentTypeRenderer;
 
+use Negotiation\Exception\InvalidMediaType;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Slim\Http\Body;
 use RuntimeException;
+use Slim\Http\Body;
 
 class Renderer
 {
@@ -190,6 +191,7 @@ class Renderer
      * Read the accept header and work out which format is preferred
      *
      * @param  string $acceptHeader Accept header from request
+     * @param  array  $allowedFormats Array of formats that are preferred
      * @param  string $default Default format to return if no allowedFormats are found
      * @return string
      */
@@ -200,7 +202,11 @@ class Renderer
         }
 
         $negotiator = new Negotiator();
-        $elements = $negotiator->getOrderedElements($acceptHeader);
+        try {
+            $elements = $negotiator->getOrderedElements($acceptHeader);
+        } catch (InvalidMediaType $e) {
+            return $default;
+        }
 
         foreach ($elements as $element) {
             $subpart = $element->getSubPart();
