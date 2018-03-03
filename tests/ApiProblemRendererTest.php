@@ -1,14 +1,15 @@
 <?php
 namespace RKA\ContentTypeRenderer\Tests;
 
-use RKA\ContentTypeRenderer\ApiProblemRenderer as Renderer;
 use Crell\ApiProblem\ApiProblem;
-use Zend\Diactoros\Request;
-use Zend\Diactoros\Uri;
-use Zend\Diactoros\Response;
+use PHPUnit\Framework\TestCase;
+use RKA\ContentTypeRenderer\ApiProblemRenderer as Renderer;
 use RuntimeException;
+use Zend\Diactoros\Request;
+use Zend\Diactoros\Response;
+use Zend\Diactoros\Uri;
 
-class ApiProblemRendererTest extends \PHPUnit_Framework_TestCase
+class ApiProblemRendererTest extends TestCase
 {
     /**
      * Test that a given array is rendered to the correct media type
@@ -94,7 +95,9 @@ class ApiProblemRendererTest extends \PHPUnit_Framework_TestCase
         $response = new Response();
         $renderer = new Renderer();
 
-        $this->setExpectedException(RuntimeException::class, 'Data is not an ApiProblem object');
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Data is not an ApiProblem object');
+
         $response  = $renderer->render($request, $response, $problem);
     }
 }

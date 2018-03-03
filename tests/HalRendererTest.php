@@ -1,14 +1,15 @@
 <?php
 namespace RKA\ContentTypeRenderer\Tests;
 
-use RKA\ContentTypeRenderer\HalRenderer as Renderer;
 use Nocarrier\Hal;
-use Zend\Diactoros\Request;
-use Zend\Diactoros\Uri;
-use Zend\Diactoros\Response;
+use PHPUnit\Framework\TestCase;
+use RKA\ContentTypeRenderer\HalRenderer as Renderer;
 use RuntimeException;
+use Zend\Diactoros\Request;
+use Zend\Diactoros\Response;
+use Zend\Diactoros\Uri;
 
-class HalRendererTest extends \PHPUnit_Framework_TestCase
+class HalRendererTest extends TestCase
 {
     /**
      * Test that a given array is rendered to the correct media type
@@ -163,7 +164,9 @@ class HalRendererTest extends \PHPUnit_Framework_TestCase
         $response = new Response();
         $renderer = new Renderer();
 
-        $this->setExpectedException(RuntimeException::class, 'Data is not a Hal object');
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage('Data is not a Hal object');
+
         $response  = $renderer->render($request, $response, $data);
     }
 }

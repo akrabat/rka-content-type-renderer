@@ -1,11 +1,12 @@
 <?php
 namespace RKA\ContentTypeRenderer\Tests;
 
-use RKA\ContentTypeRenderer\Negotiator;
 use Negotiation\Exception\InvalidArgument;
 use Negotiation\Exception\InvalidMediaType;
+use PHPUnit\Framework\TestCase;
+use RKA\ContentTypeRenderer\Negotiator;
 
-class NegotiatorTest extends \PHPUnit_Framework_TestCase
+class NegotiatorTest extends TestCase
 {
     /**
      * @var Negotiator

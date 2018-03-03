@@ -1,14 +1,15 @@
 <?php
 namespace RKA\ContentTypeRenderer\Tests;
 
+use PHPUnit\Framework\TestCase;
 use RKA\ContentTypeRenderer\Renderer;
+use RuntimeException;
 use Zend\Diactoros\Request;
-use Zend\Diactoros\Uri;
 use Zend\Diactoros\Response;
 use Zend\Diactoros\Stream;
-use RuntimeException;
+use Zend\Diactoros\Uri;
 
-class RendererTest extends \PHPUnit_Framework_TestCase
+class RendererTest extends TestCase
 {
     public function determinePeferredFormatProvider()
     {
@@ -240,7 +241,9 @@ class RendererTest extends \PHPUnit_Framework_TestCase
         $response = new Response();
         $renderer = new Renderer();
 
-        $this->setExpectedException(RuntimeException::class, $error);
+        $this->expectException(RuntimeException::class);
+        $this->expectExceptionMessage($error);
+
         $response = $renderer->render($request, $response, $data);
     }
 
