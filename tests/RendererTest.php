@@ -49,9 +49,9 @@ class RendererTest extends \PHPUnit_Framework_TestCase
      *
      * @dataProvider rendererProvider
      */
-    public function testRenderer($mediaType, $data, $expectedMediaType, $expectedBody, $defaultMediaType)
+    public function testRenderer($pretty, $mediaType, $data, $expectedMediaType, $expectedBody, $defaultMediaType)
     {
-        $renderer = new Renderer();
+        $renderer = new Renderer($pretty);
         if ($defaultMediaType) {
             $renderer->setDefaultMediaType($defaultMediaType);
         }
@@ -103,6 +103,7 @@ class RendererTest extends \PHPUnit_Framework_TestCase
         $dataSerializableClass = new Support\SerializableClass($dataArray);
 
         $expectedJson = json_encode($dataArray, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        $expectedNonPrettyJson = json_encode($dataArray);
 
         $expectedScalarJson = '"Hello World"';
 
@@ -119,6 +120,12 @@ class RendererTest extends \PHPUnit_Framework_TestCase
   </items>
 </root>
 ';
+
+        $expectedNonPrettyXML = '<?xml version="1.0"?>'
+            . "\n"
+            .'<root><items><name>Alex</name><is_admin>1</is_admin></items><items><name>Robin</name>'
+            . '<is_admin>0</is_admin><link>http://example.com</link></items></root>'
+            . "\n";
 
         $expectedXML2 = '<?xml version="1.0"?>
 <root>
@@ -205,25 +212,29 @@ class RendererTest extends \PHPUnit_Framework_TestCase
 ';
 
         return [
-            ['application/json', $dataArray, 'application/json', $expectedJson, null],
-            ['application/json', $dataScalar, 'application/json', $expectedScalarJson, null],
-            ['application/json', $dataSerializableClass, 'application/json', $expectedJson, null],
-            ['application/xml', $dataArray, 'application/xml', $expectedXML, null],
-            ['application/xml', $dataSerializableClass, 'application/xml', $expectedXML, null],
-            ['text/xml', $dataArray, 'text/xml', $expectedXML, null],
-            ['text/xml', $dataSerializableClass, 'text/xml', $expectedXML, null],
-            ['text/html', $dataArray, 'text/html', $expectedHTML, null],
-            ['text/html', $dataScalar, 'text/html', $expectedScalarHTML, null],
-            ['text/html', $dataSerializableClass, 'text/html', $expectedHTML, null],
+            [true, 'application/json', $dataArray, 'application/json', $expectedJson, null],
+            [true, 'application/json', $dataScalar, 'application/json', $expectedScalarJson, null],
+            [true, 'application/json', $dataSerializableClass, 'application/json', $expectedJson, null],
+            [true, 'application/xml', $dataArray, 'application/xml', $expectedXML, null],
+            [true, 'application/xml', $dataSerializableClass, 'application/xml', $expectedXML, null],
+            [true, 'text/xml', $dataArray, 'text/xml', $expectedXML, null],
+            [true, 'text/xml', $dataSerializableClass, 'text/xml', $expectedXML, null],
+            [true, 'text/html', $dataArray, 'text/html', $expectedHTML, null],
+            [true, 'text/html', $dataScalar, 'text/html', $expectedScalarHTML, null],
+            [true, 'text/html', $dataSerializableClass, 'text/html', $expectedHTML, null],
 
             // default to JSON for unknown media type
-            ['text/csv', $dataArray, 'application/json', $expectedJson, null],
+            [true, 'text/csv', $dataArray, 'application/json', $expectedJson, null],
 
             // default to HTML in this case for unknown media type
-            ['text/csv', $dataArray, 'text/html', $expectedHTML, 'text/html'],
+            [true, 'text/csv', $dataArray, 'text/html', $expectedHTML, 'text/html'],
 
             // Numeric array indexes can cause trouble for XML
-            ['text/xml', [[1], 'foo' => 'bar', 3], 'text/xml', $expectedXML2, null],
+            [true, 'text/xml', [[1], 'foo' => 'bar', 3], 'text/xml', $expectedXML2, null],
+
+            // Pretty can be turned off
+            [false, 'application/json', $dataArray, 'application/json', $expectedNonPrettyJson, null],
+            [false, 'application/xml', $dataArray, 'application/xml', $expectedNonPrettyXML, null],
         ];
     }
 

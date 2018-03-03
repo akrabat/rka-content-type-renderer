@@ -32,6 +32,8 @@ $response  = $renderer->render($request, $response, $data);
 return $response->withStatus(200);
 ```
 
+The constructor takes a parameter, `$pretty` that defaults to `true`. Set to `false` to disable pretty printing.
+
 ## HalRenderer
 
 This component also supports [nocarrier/hal][hal] objects with the `HalRenderer`:
