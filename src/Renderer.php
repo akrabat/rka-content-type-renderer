@@ -9,6 +9,12 @@ use Slim\Http\Body;
 
 class Renderer
 {
+    /**
+     * Pretty print JSON (default true)
+     * @var bool
+     */
+    protected $pretty;
+
     protected $defaultMediaType = 'application/json';
     protected $knownMediaTypes = ['application/json', 'application/xml', 'text/xml', 'text/html'];
     protected $mediaSubtypesToAllowedDataTypesMap = [
@@ -19,6 +25,11 @@ class Renderer
     protected $xmlRootElementName = 'root';
     protected $htmlPrefix;
     protected $htmlPostfix;
+
+    public function __construct($pretty = true)
+    {
+        $this->pretty = (bool)$pretty;
+    }
 
     public function render(RequestInterface $request, ResponseInterface $response, $data)
     {
@@ -80,7 +91,11 @@ class Renderer
                 break;
 
             case 'application/json':
-                $output = json_encode($data, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+                $options = 0;
+                if ($this->pretty) {
+                    $options = JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES;
+                }
+                $output = json_encode($data, $options);
                 break;
 
             default:
@@ -353,7 +368,7 @@ HTML;
 
         $dom = new \DOMDocument('1.0');
         $dom->preserveWhiteSpace = false;
-        $dom->formatOutput = true;
+        $dom->formatOutput = $this->pretty;
         $dom->loadXML($xml->asXML());
 
         return $dom->saveXML();
