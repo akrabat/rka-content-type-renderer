@@ -446,4 +446,31 @@ class RendererTest extends TestCase
         $this->assertSame(json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES), (string)$response->getBody());
         $this->assertInstanceOf('RKA\ContentTypeRenderer\SimplePsrStream', $response->getBody());
     }
+
+    public function testJsonOptions()
+    {
+        $data = [
+            [
+                'name' => 'Alex',
+                'is_admin' => true,
+            ],
+            [
+                'name' => 'Robin',
+                'is_admin' => false,
+            ],
+        ];
+
+        $renderer = new Renderer(true);
+        $renderer->setJsonOptions(JSON_FORCE_OBJECT);
+
+        $request = (new Request())
+            ->withUri(new Uri('http://example.com'))
+            ->withAddedHeader('Accept', 'application/json');
+
+        $response = new Response();
+        $response = $renderer->render($request, $response, $data);
+
+        $expectedBody = json_encode($data, JSON_FORCE_OBJECT | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        $this->assertSame($expectedBody, (string)$response->getBody());
+    }
 }
