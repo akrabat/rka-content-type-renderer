@@ -18,17 +18,6 @@ class ApiProblemRenderer extends Renderer
         'application/problem+xml',
     ];
 
-    /**
-     * Pretty print output (default true)
-     * @var bool
-     */
-    protected $pretty;
-
-    public function __construct($pretty = true)
-    {
-        $this->pretty = (bool)$pretty;
-    }
-
     public function render(RequestInterface $request, ResponseInterface $response, $problem)
     {
         // Look for API Problem specific media types first. If none, then find preferred format
