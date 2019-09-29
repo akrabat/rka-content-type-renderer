@@ -1,4 +1,5 @@
 <?php
+
 namespace RKA\ContentTypeRenderer;
 
 use Negotiation\Exception\InvalidMediaType;

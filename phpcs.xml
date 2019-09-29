@@ -6,7 +6,7 @@
     <arg name="colors" />
 
     <!-- Rules -->
-    <rule ref="PSR2"/>
+    <rule ref="PSR12"/>
 
     <!-- Check src/ and tests/ directories -->
     <file>src</file>

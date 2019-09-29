@@ -1,4 +1,5 @@
 <?php
+
 namespace RKA\ContentTypeRenderer\Tests;
 
 use Nocarrier\Hal;
@@ -79,7 +80,7 @@ class HalRendererTest extends TestCase
                     'href' => '/foo',
                 ],
             ]
-        ], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
         $expectedXML = '<?xml version="1.0"?>' . PHP_EOL
                     . '<resource href="/foo"><items><name>Alex</name><is_admin>1</is_admin></items>'

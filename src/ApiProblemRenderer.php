@@ -1,4 +1,5 @@
 <?php
+
 namespace RKA\ContentTypeRenderer;
 
 use Crell\ApiProblem\ApiProblem;

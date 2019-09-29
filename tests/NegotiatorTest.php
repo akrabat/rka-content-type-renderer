@@ -1,4 +1,5 @@
 <?php
+
 namespace RKA\ContentTypeRenderer\Tests;
 
 use Negotiation\Exception\InvalidArgument;

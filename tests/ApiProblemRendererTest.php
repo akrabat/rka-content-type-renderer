@@ -1,4 +1,5 @@
 <?php
+
 namespace RKA\ContentTypeRenderer\Tests;
 
 use Crell\ApiProblem\ApiProblem;
@@ -60,7 +61,7 @@ class ApiProblemRendererTest extends TestCase
 
 
         $expectedJson = json_encode($outputData);
-        $expectedPrettyJson = json_encode($outputData, JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
+        $expectedPrettyJson = json_encode($outputData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
 
         $expectedXML = '<?xml version="1.0"?>' . PHP_EOL
                     . '<problem><title>foo</title><type>about:blank</type><status>400</status></problem>'

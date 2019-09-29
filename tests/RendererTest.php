@@ -1,4 +1,5 @@
 <?php
+
 namespace RKA\ContentTypeRenderer\Tests;
 
 use PHPUnit\Framework\TestCase;
@@ -124,7 +125,7 @@ class RendererTest extends TestCase
 
         $expectedNonPrettyXML = '<?xml version="1.0"?>'
             . "\n"
-            .'<root><items><name>Alex</name><is_admin>1</is_admin></items><items><name>Robin</name>'
+            . '<root><items><name>Alex</name><is_admin>1</is_admin></items><items><name>Robin</name>'
             . '<is_admin>0</is_admin><link>http://example.com</link></items></root>'
             . "\n";
 

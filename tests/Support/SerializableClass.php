@@ -1,4 +1,5 @@
 <?php
+
 namespace RKA\ContentTypeRenderer\Tests\Support;
 
 class SerializableClass implements \JsonSerializable

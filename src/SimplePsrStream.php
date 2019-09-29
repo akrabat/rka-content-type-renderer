@@ -1,4 +1,5 @@
 <?php
+
 namespace RKA\ContentTypeRenderer;
 
 use Psr\Http\Message\StreamInterface;
