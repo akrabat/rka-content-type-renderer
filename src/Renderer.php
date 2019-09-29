@@ -145,7 +145,7 @@ class Renderer
      *
      * @return null
      */
-    protected function arrayToHtml($content, $html = '')
+    protected function arrayToHtml($content)
     {
         // scalar types can be return directly
         if (is_scalar($content)) {
