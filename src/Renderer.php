@@ -25,6 +25,7 @@ class Renderer
     protected $xmlRootElementName = 'root';
     protected $htmlPrefix;
     protected $htmlPostfix;
+    protected $jsonOptions = 0;
 
     public function __construct($pretty = true)
     {
@@ -91,10 +92,7 @@ class Renderer
                 break;
 
             case 'application/json':
-                $options = 0;
-                if ($this->pretty) {
-                    $options = JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES;
-                }
+                $options = $this->getJsonOptions();
                 $output = json_encode($data, $options);
                 break;
 
@@ -431,5 +429,31 @@ HTML;
         }
 
         return $xmlElement;
+    }
+
+    /**
+     * Setter for jsonOptions
+     *
+     * @param int $options
+     * @return self
+     */
+    public function setJsonOptions($options)
+    {
+        $this->jsonOptions = $options;
+        return $this;
+    }
+
+    /**
+     * Getter for jsonOptions
+     *
+     * @return int
+     */
+    public function getJsonOptions()
+    {
+        $options = $this->jsonOptions;
+        if ($this->pretty) {
+            $options = $options | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES;
+        }
+        return $options;
     }
 }
