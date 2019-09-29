@@ -11,7 +11,7 @@ use RuntimeException;
 
 class HalRenderer extends Renderer
 {
-    protected $defaultMediaType = null;
+    protected $defaultMediaType;
 
     protected $knownMediaTypes = [
         'application/hal+json',
@@ -23,7 +23,8 @@ class HalRenderer extends Renderer
         // Look for HAL specific media types first. If none, then find preferred format
         $mediaType = $this->determineMediaType($request->getHeaderLine('Accept'));
         if ($mediaType) {
-            list ($_, $format) = explode('+', $mediaType);
+            $parts = explode('+', $mediaType);
+            $format = $parts[1];
         } else {
             $format = $this->determinePeferredFormat(
                 $request->getHeaderLine('Accept'),
@@ -33,7 +34,7 @@ class HalRenderer extends Renderer
         }
 
         $output = $this->renderOutput($format, $data);
-        if ($format == 'html') {
+        if ($format === 'html') {
             $contentType = 'text/html';
         } else {
             $contentType = 'application/hal+' . $format;
@@ -66,7 +67,7 @@ class HalRenderer extends Renderer
                 break;
             
             default:
-                throw new RuntimeException("Unknown content type $contentType");
+                throw new RuntimeException("Unknown format $format");
         }
 
         return $output;

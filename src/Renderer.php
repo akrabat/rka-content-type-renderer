@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace RKA\ContentTypeRenderer;
 
+use DOMDocument;
+use JsonSerializable;
+use Negotiation\Accept;
 use Negotiation\Exception\InvalidMediaType;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
-use Slim\Http\Body;
 
 class Renderer
 {
@@ -22,8 +24,8 @@ class Renderer
     protected $knownMediaTypes = ['application/json', 'application/xml', 'text/xml', 'text/html'];
     protected $mediaSubtypesToAllowedDataTypesMap = [
         'xml' => ['array', 'JsonSerializable'],
-        'json' => ['scalar','array', 'JsonSerializable'],
-        'html' => ['scalar','array', 'JsonSerializable']
+        'json' => ['scalar', 'array', 'JsonSerializable'],
+        'html' => ['scalar', 'array', 'JsonSerializable']
     ];
     protected $xmlRootElementName = 'root';
     protected $htmlPrefix;
@@ -70,7 +72,7 @@ class Renderer
                     }
                     break;
                 case 'JsonSerializable':
-                    if ($data instanceof \JsonSerializable) {
+                    if ($data instanceof JsonSerializable) {
                         return true;
                     }
                     break;
@@ -106,19 +108,19 @@ class Renderer
         return $output;
     }
 
-    protected function writeBody($response, $output)
+    protected function writeBody(ResponseInterface $response, $output): ResponseInterface
     {
         $body = $response->getBody();
         if (!$body->isWritable()) {
             // the response's body is not writable (or doesn't exist)
             // so create our own
-            $body = new SimplePsrStream(fopen('php://temp', 'r+'));
+            $body = new SimplePsrStream(fopen('php://temp', 'rb+'));
         }
         try {
             $body->rewind();
-        } catch (\RuntimeException $e) {
+        } catch (RuntimeException $e) {
             // could not rewind the stream, therefore use our own.
-            $body = new SimplePsrStream(fopen('php://temp', 'r+'));
+            $body = new SimplePsrStream(fopen('php://temp', 'rb+'));
         }
         $body->write($output);
 
@@ -132,7 +134,7 @@ class Renderer
      *
      * @return string
      */
-    protected function renderHtml($data)
+    protected function renderHtml($data): string
     {
         $html = $this->getHtmlPrefix();
         $html .= $this->arrayToHtml($data);
@@ -145,10 +147,9 @@ class Renderer
      * Recursively render an array to an HTML list
      *
      * @param mixed $content data to be rendered
-     *
-     * @return null
+     * @return string
      */
-    protected function arrayToHtml($content)
+    protected function arrayToHtml($content): string
     {
         // scalar types can be return directly
         if (is_scalar($content)) {
@@ -186,16 +187,16 @@ class Renderer
      * Read the accept header and determine which media type we know about
      * is wanted.
      *
-     * @param  string $acceptHeader Accept header from request
-     * @return string
+     * @param string $acceptHeader Accept header from request
+     * @return string|null
      */
-    protected function determineMediaType($acceptHeader)
+    protected function determineMediaType($acceptHeader): ?string
     {
         if (!empty($acceptHeader)) {
             $negotiator = new Negotiator();
             $mediaType = $negotiator->getBest($acceptHeader, $this->knownMediaTypes);
 
-            if ($mediaType) {
+            if ($mediaType instanceof Accept) {
                 return $mediaType->getValue();
             }
         }
@@ -206,19 +207,23 @@ class Renderer
     /**
      * Read the accept header and work out which format is preferred
      *
-     * @param  string $acceptHeader Accept header from request
-     * @param  array  $allowedFormats Array of formats that are preferred
-     * @param  string $default Default format to return if no allowedFormats are found
+     * @param string $acceptHeader Accept header from request
+     * @param array $allowedFormats Array of formats that are preferred
+     * @param string $default Default format to return if no allowedFormats are found
      * @return string
      */
-    public function determinePeferredFormat($acceptHeader, $allowedFormats = ['json', 'xml', 'html'], $default = 'json')
-    {
+    public function determinePeferredFormat(
+        $acceptHeader,
+        $allowedFormats = ['json', 'xml', 'html'],
+        $default = 'json'
+    ): string {
         if (empty($acceptHeader)) {
             return $default;
         }
 
         $negotiator = new Negotiator();
         try {
+            /** @var Accept[] $elements */
             $elements = $negotiator->getOrderedElements($acceptHeader);
         } catch (InvalidMediaType $e) {
             return $default;
@@ -241,7 +246,7 @@ class Renderer
      *
      * @return string
      */
-    public function getDefaultMediaType()
+    public function getDefaultMediaType(): ?string
     {
         return $this->defaultMediaType;
     }
@@ -252,7 +257,7 @@ class Renderer
      * @param string $defaultMediaType Value to set
      * @return self
      */
-    public function setDefaultMediaType($defaultMediaType)
+    public function setDefaultMediaType(string $defaultMediaType): self
     {
         $this->defaultMediaType = $defaultMediaType;
         return $this;
@@ -268,7 +273,7 @@ class Renderer
         if ($this->htmlPrefix === null) {
             $this->htmlPrefix = <<<HTML
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -367,7 +372,7 @@ HTML;
     {
         $xml = $this->arrayToXml($data);
 
-        $dom = new \DOMDocument('1.0');
+        $dom = new DOMDocument('1.0');
         $dom->preserveWhiteSpace = false;
         $dom->formatOutput = $this->pretty;
         $dom->loadXML($xml->asXML());
@@ -379,8 +384,8 @@ HTML;
      * Simple Array to XML conversion
      * Based on http://www.codeproject.com/Questions/553031/JSONplusTOplusXMLplusconvertionpluswithplusphp
      *
-     * @param  array $data                  Data to convert
-     * @param  SimpleXMLElement $xmlElement XMLElement
+     * @param array $data Data to convert
+     * @param SimpleXMLElement $xmlElement XMLElement
      * @return SimpleXMLElement
      */
     protected function arrayToXml($data, $xmlElement = null)
@@ -395,7 +400,7 @@ HTML;
                 if (!is_numeric($key)) {
                     $subnode = $xmlElement->addChild("$key");
 
-                    if (count($value) > 1 && is_array($value)) {
+                    if (count($value) > 1) {
                         $jump = false;
                         $count = 1;
                         foreach ($value as $k => $v) {
@@ -428,7 +433,7 @@ HTML;
                 $xmlElement->addChild("$key", "$value");
             }
 
-            LE: ;
+            LE:;
         }
 
         return $xmlElement;

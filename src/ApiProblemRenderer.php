@@ -20,14 +20,18 @@ class ApiProblemRenderer extends Renderer
 
     public function render(RequestInterface $request, ResponseInterface $response, $problem)
     {
+        if (!$problem instanceof ApiProblem) {
+            throw new RuntimeException('Data is not an ApiProblem object');
+        }
+
         // Look for API Problem specific media types first. If none, then find preferred format
         $mediaType = $this->determineMediaType($request->getHeaderLine('Accept'));
         if ($mediaType) {
-            list ($_, $format) = explode('+', $mediaType);
+            $parts = explode('+', $mediaType);
+            $format = $parts[1];
         } else {
             $format = $this->determinePeferredFormat($request->getHeaderLine('Accept'), ['json', 'xml'], 'json');
         }
-
 
         // set the ProblemAPi content type for JSON or XML
         $output = $this->renderOutput($format, $problem);
@@ -49,7 +53,7 @@ class ApiProblemRenderer extends Renderer
             throw new RuntimeException('Data is not an ApiProblem object');
         }
 
-        if ($format == 'xml') {
+        if ($format === 'xml') {
             return $problem->asXml($this->pretty);
         }
 

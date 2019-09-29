@@ -21,25 +21,25 @@ class NegotiatorTest extends TestCase
 
     public static function dataProviderForTestGetOrderedElements()
     {
-        return array(
+        return [
             // error cases
-            array('', new InvalidArgument('The header string should not be empty.')),
-            array('/qwer', new InvalidMediaType()),
+            ['', new InvalidArgument('The header string should not be empty.')],
+            ['/qwer', new InvalidMediaType()],
 
             // first one wins as no quality modifiers
-            array('text/html, text/xml', array('text/html', 'text/xml')),
-            
+            ['text/html, text/xml', ['text/html', 'text/xml']],
+
             // ordered by quality modifier
-            array(
+            [
                 'text/html;q=0.3, text/html;q=0.7',
-                array('text/html;q=0.7', 'text/html;q=0.3')
-            ),
+                ['text/html;q=0.7', 'text/html;q=0.3']
+            ],
             // ordered by quality modifier - the one with no modifier wins, level not taken into account
-            array(
+            [
                 'text/*;q=0.3, text/html;q=0.7, text/html;level=1, text/html;level=2;q=0.4, */*;q=0.5',
-                array('text/html;level=1', 'text/html;q=0.7', '*/*;q=0.5', 'text/html;level=2;q=0.4', 'text/*;q=0.3')
-            ),
-        );
+                ['text/html;level=1', 'text/html;q=0.7', '*/*;q=0.5', 'text/html;level=2;q=0.4', 'text/*;q=0.3']
+            ],
+        ];
     }
 
     /**

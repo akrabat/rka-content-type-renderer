@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace RKA\ContentTypeRenderer;
 
 use Negotiation\Exception\InvalidArgument;
+use Negotiation\Exception\InvalidHeader;
 use Negotiation\Negotiator as BaseNegotiator;
 
 /**
@@ -45,16 +46,12 @@ class Negotiator extends BaseNegotiator
             throw new InvalidArgument('The header string should not be empty.');
         }
 
-        $elements = array();
-        $orderKeys = array();
+        $elements = [];
+        $orderKeys = [];
         foreach ($this->parseHeader($header) as $key => $h) {
-            try {
                 $element = $this->acceptFactory($h);
                 $elements[] = $element;
                 $orderKeys[] = [$element->getQuality(), $key, $element->getValue()];
-            } catch (Exception\Exception $e) {
-                // silently skip in case of invalid headers coming in from a client
-            }
         }
         
         // sort based on quality and then original order. This is necessary as
