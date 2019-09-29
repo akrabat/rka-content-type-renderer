@@ -51,9 +51,9 @@ class Renderer
 
     protected function isDataValidForMediaType($mediaSubType, $data)
     {
-        $allwedDataTypes = $this->mediaSubtypesToAllowedDataTypesMap[$mediaSubType];
+        $allowedDataTypes = $this->mediaSubtypesToAllowedDataTypesMap[$mediaSubType];
 
-        foreach ($allwedDataTypes as $allowedDataType) {
+        foreach ($allowedDataTypes as $allowedDataType) {
             switch ($allowedDataType) {
                 case 'scalar':
                     if (is_scalar($data)) {
