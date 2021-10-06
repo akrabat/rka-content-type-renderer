@@ -62,9 +62,9 @@ class Negotiator extends BaseNegotiator
             $qB = $b[0];
             
             if ($qA == $qB) {
-                return $a[1] > $b[1];
+                return ($a[1] > $b[1]) ? 1 : -1;
             }
-            
+
             return ($qA > $qB) ? -1 : 1;
         });
 

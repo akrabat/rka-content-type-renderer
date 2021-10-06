@@ -40,7 +40,7 @@ class Renderer
         $dataIsValidForMediatype = $this->isDataValidForMediaType($mediaSubType, $data);
         if (!$dataIsValidForMediatype) {
             throw new RuntimeException('Data for mediaType ' . $mediaType . ' must be '
-                . implode($this->mediaSubtypesToAllowedDataTypesMap[$mediaSubType], ' or '));
+                . implode(' or ', $this->mediaSubtypesToAllowedDataTypesMap[$mediaSubType]));
         }
 
         $output = $this->renderOutput($mediaType, $data);

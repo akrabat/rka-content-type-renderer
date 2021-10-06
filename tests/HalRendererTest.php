@@ -5,9 +5,9 @@ use Nocarrier\Hal;
 use PHPUnit\Framework\TestCase;
 use RKA\ContentTypeRenderer\HalRenderer as Renderer;
 use RuntimeException;
-use Zend\Diactoros\Request;
-use Zend\Diactoros\Response;
-use Zend\Diactoros\Uri;
+use Laminas\Diactoros\Request;
+use Laminas\Diactoros\Response;
+use Laminas\Diactoros\Uri;
 
 class HalRendererTest extends TestCase
 {

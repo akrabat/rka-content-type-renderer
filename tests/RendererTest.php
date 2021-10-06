@@ -4,10 +4,10 @@ namespace RKA\ContentTypeRenderer\Tests;
 use PHPUnit\Framework\TestCase;
 use RKA\ContentTypeRenderer\Renderer;
 use RuntimeException;
-use Zend\Diactoros\Request;
-use Zend\Diactoros\Response;
-use Zend\Diactoros\Stream;
-use Zend\Diactoros\Uri;
+use Laminas\Diactoros\Request;
+use Laminas\Diactoros\Response;
+use Laminas\Diactoros\Stream;
+use Laminas\Diactoros\Uri;
 
 class RendererTest extends TestCase
 {

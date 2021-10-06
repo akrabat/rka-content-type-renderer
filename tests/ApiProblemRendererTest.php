@@ -5,9 +5,9 @@ use Crell\ApiProblem\ApiProblem;
 use PHPUnit\Framework\TestCase;
 use RKA\ContentTypeRenderer\ApiProblemRenderer as Renderer;
 use RuntimeException;
-use Zend\Diactoros\Request;
-use Zend\Diactoros\Response;
-use Zend\Diactoros\Uri;
+use Laminas\Diactoros\Request;
+use Laminas\Diactoros\Response;
+use Laminas\Diactoros\Uri;
 
 class ApiProblemRendererTest extends TestCase
 {

@@ -27,7 +27,7 @@ class NegotiatorTest extends TestCase
 
             // first one wins as no quality modifiers
             array('text/html, text/xml', array('text/html', 'text/xml')),
-            
+
             // ordered by quality modifier
             array(
                 'text/html;q=0.3, text/html;q=0.7',
