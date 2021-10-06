@@ -2,6 +2,7 @@
 namespace RKA\ContentTypeRenderer;
 
 use Negotiation\Exception\InvalidMediaType;
+use Negotiation\Negotiator;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
