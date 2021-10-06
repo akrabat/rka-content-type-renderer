@@ -2,6 +2,7 @@
 namespace RKA\ContentTypeRenderer;
 
 use Negotiation\Exception\InvalidMediaType;
+use Negotiation\Negotiator;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use RuntimeException;
@@ -40,7 +41,7 @@ class Renderer
         $dataIsValidForMediatype = $this->isDataValidForMediaType($mediaSubType, $data);
         if (!$dataIsValidForMediatype) {
             throw new RuntimeException('Data for mediaType ' . $mediaType . ' must be '
-                . implode($this->mediaSubtypesToAllowedDataTypesMap[$mediaSubType], ' or '));
+                . implode(' or ', $this->mediaSubtypesToAllowedDataTypesMap[$mediaSubType]));
         }
 
         $output = $this->renderOutput($mediaType, $data);
