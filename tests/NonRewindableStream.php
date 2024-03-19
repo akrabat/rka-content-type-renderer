@@ -10,6 +10,8 @@ namespace RKA\ContentTypeRenderer\Tests;
  */
 class NonRewindableStream
 {
+    public $context;
+
     public function stream_open($path, $mode, $options, &$opened_path)
     {
         return true;
