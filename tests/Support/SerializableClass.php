@@ -10,7 +10,7 @@ class SerializableClass implements \JsonSerializable
         $this->data = $data;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         return $this->data;
     }
